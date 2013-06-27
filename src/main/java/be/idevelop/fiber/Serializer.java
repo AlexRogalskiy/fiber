@@ -24,15 +24,31 @@
 
 package be.idevelop.fiber;
 
-interface Serializer<T> {
+public abstract class Serializer<T> {
 
-    short getId();
+    private final Class<T> serializedClass;
 
-    void setId(short id);
+    private short id = -1;
 
-    T read(Input input);
+    protected Serializer(Class<T> serializedClass) {
+        this.serializedClass = serializedClass;
+    }
 
-    void write(T object, Output output);
+    public final short getId() {
+        return id;
+    }
 
-    Class<T> getSerializedClass();
+    public final void setId(short id) {
+        if (this.id < 0) {
+            this.id = id;
+        }
+    }
+
+    public final Class<T> getSerializedClass() {
+        return serializedClass;
+    }
+
+    public abstract T read(Input input);
+
+    public abstract void write(T object, Output output);
 }

@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class ClassSerializer extends AbstractSerializer<Class> implements Serializer<Class> {
+final class ClassSerializer extends Serializer<Class> {
 
     ClassSerializer() {
         super(Class.class);

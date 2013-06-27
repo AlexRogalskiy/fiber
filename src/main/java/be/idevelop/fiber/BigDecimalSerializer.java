@@ -27,7 +27,7 @@ package be.idevelop.fiber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-final class BigDecimalSerializer extends AbstractSerializer<BigDecimal> implements Serializer<BigDecimal> {
+final class BigDecimalSerializer extends Serializer<BigDecimal> {
 
     BigDecimalSerializer() {
         super(BigDecimal.class);

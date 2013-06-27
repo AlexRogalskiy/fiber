@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class IntegerSerializer extends AbstractSerializer<Integer> implements Serializer<Integer> {
+final class IntegerSerializer extends Serializer<Integer> {
 
     IntegerSerializer() {
         super(Integer.TYPE);

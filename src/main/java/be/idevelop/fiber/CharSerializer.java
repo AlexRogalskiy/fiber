@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class CharSerializer extends AbstractSerializer<Character> implements Serializer<Character> {
+final class CharSerializer extends Serializer<Character> {
 
     CharSerializer() {
         super(Character.TYPE);

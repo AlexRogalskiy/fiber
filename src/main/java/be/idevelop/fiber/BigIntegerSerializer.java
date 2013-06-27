@@ -26,7 +26,7 @@ package be.idevelop.fiber;
 
 import java.math.BigInteger;
 
-final class BigIntegerSerializer extends AbstractSerializer<BigInteger> implements Serializer<BigInteger> {
+final class BigIntegerSerializer extends Serializer<BigInteger> {
 
     BigIntegerSerializer() {
         super(BigInteger.class);

@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class ByteSerializer extends AbstractSerializer<Byte> implements Serializer<Byte> {
+final class ByteSerializer extends Serializer<Byte> {
 
     ByteSerializer() {
         super(Byte.TYPE);

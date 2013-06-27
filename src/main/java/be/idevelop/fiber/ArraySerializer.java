@@ -26,7 +26,7 @@ package be.idevelop.fiber;
 
 import java.lang.reflect.Array;
 
-final class ArraySerializer extends AbstractSerializer<Object> implements Serializer<Object> {
+final class ArraySerializer extends Serializer<Object> {
 
     ArraySerializer() {
         super(Object.class);

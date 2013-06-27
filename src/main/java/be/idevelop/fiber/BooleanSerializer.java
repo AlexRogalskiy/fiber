@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class BooleanSerializer extends AbstractSerializer<Boolean> implements Serializer<Boolean> {
+final class BooleanSerializer extends Serializer<Boolean> {
 
     BooleanSerializer() {
         super(Boolean.TYPE);

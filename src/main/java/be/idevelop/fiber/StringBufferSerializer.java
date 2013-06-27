@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class StringBufferSerializer extends AbstractSerializer<StringBuffer> implements Serializer<StringBuffer> {
+final class StringBufferSerializer extends Serializer<StringBuffer> {
 
     StringBufferSerializer() {
         super(StringBuffer.class);

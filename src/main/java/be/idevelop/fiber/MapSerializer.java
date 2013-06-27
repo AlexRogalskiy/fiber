@@ -30,7 +30,7 @@ import java.util.Map;
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static java.util.Collections.EMPTY_MAP;
 
-public class MapSerializer<M extends Map<Object, Object>> extends AbstractSerializer<M> implements Serializer<M> {
+public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> {
 
     protected MapSerializer(Class<M> mapClass) {
         super(mapClass);

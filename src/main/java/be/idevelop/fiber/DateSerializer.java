@@ -26,7 +26,7 @@ package be.idevelop.fiber;
 
 import java.util.Date;
 
-final class DateSerializer extends AbstractSerializer<Date> implements Serializer<Date> {
+final class DateSerializer extends Serializer<Date> {
 
     DateSerializer() {
         super(Date.class);

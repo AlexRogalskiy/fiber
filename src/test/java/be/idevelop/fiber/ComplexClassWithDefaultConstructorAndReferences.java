@@ -26,6 +26,8 @@ package be.idevelop.fiber;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Currency;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,10 @@ class ComplexClassWithDefaultConstructorAndReferences {
     private Map<String, List<BigInteger>> map = new HashMap<String, List<BigInteger>>();
 
     private ComplexClassWithDefaultConstructorAndReferences[] references = new ComplexClassWithDefaultConstructorAndReferences[2];
+
+    private Date date = new Date();
+
+    private Currency currency = Currency.getInstance("EUR");
 
     private ComplexClassWithDefaultConstructorAndReferences() {
     }
@@ -78,11 +84,21 @@ class ComplexClassWithDefaultConstructorAndReferences {
         return alwaysNull;
     }
 
+    Date getDate() {
+        return date;
+    }
+
+    Currency getCurrency() {
+        return currency;
+    }
+
     @Override
     public int hashCode() {
-        int result = i;
+        int result = alwaysNull != null ? alwaysNull.hashCode() : 0;
+        result = 31 * result + i;
         result = 31 * result + (s != null ? s.hashCode() : 0);
         result = 31 * result + (map != null ? map.hashCode() : 0);
+        result = 31 * result + (date != null ? date.hashCode() : 0);
         return result;
     }
 
@@ -97,7 +113,7 @@ class ComplexClassWithDefaultConstructorAndReferences {
 
         ComplexClassWithDefaultConstructorAndReferences that = (ComplexClassWithDefaultConstructorAndReferences) o;
 
-        boolean result = i == that.i && !(alwaysNull != null ? !alwaysNull.equals(that.alwaysNull) : that.alwaysNull != null) && !(map != null ? !map.equals(that.map) : that.map != null) && !(s != null ? !s.equals(that.s) : that.s != null);
+        boolean result = i == that.i && !(alwaysNull != null ? !alwaysNull.equals(that.alwaysNull) : that.alwaysNull != null) && !(map != null ? !map.equals(that.map) : that.map != null) && !(s != null ? !s.equals(that.s) : that.s != null) && !(date != null ? !date.equals(that.date) : that.date != null) && !(currency != null ? !currency.equals(that.currency) : that.currency != null);
         result = result && references.length == that.references.length;
         for (int j = 0; j < references.length && result; j++) {
             if (references[j] == null) {

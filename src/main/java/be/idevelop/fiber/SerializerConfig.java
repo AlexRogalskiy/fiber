@@ -211,7 +211,7 @@ final class SerializerConfig {
         }
     }
 
-    private static final class NullSerializer extends AbstractSerializer implements Serializer {
+    private static final class NullSerializer extends Serializer {
 
         @SuppressWarnings("unchecked")
         private NullSerializer() {

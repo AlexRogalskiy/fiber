@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class DoubleSerializer extends AbstractSerializer<Double> implements Serializer<Double> {
+final class DoubleSerializer extends Serializer<Double> {
 
     DoubleSerializer() {
         super(Double.TYPE);

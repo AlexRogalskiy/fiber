@@ -26,7 +26,7 @@ package be.idevelop.fiber;
 
 import java.util.Currency;
 
-final class CurrencySerializer extends AbstractSerializer<Currency> implements Serializer<Currency> {
+final class CurrencySerializer extends Serializer<Currency> {
 
     CurrencySerializer() {
         super(Currency.class);

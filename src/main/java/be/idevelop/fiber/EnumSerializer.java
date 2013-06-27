@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class EnumSerializer extends AbstractSerializer<Enum> implements Serializer<Enum> {
+final class EnumSerializer extends Serializer<Enum> {
 
     private final Enum[] constants;
 

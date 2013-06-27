@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 // introduced because Arrays.ArrayList is a private class, so we can't write super(Arrays.ArrayList.class)
-final class AbstractListSerializer extends CollectionSerializer<AbstractList> implements Serializer<AbstractList> {
+final class AbstractListSerializer extends CollectionSerializer<AbstractList> {
 
     AbstractListSerializer() {
         super(AbstractList.class);

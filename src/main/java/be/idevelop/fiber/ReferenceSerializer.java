@@ -26,7 +26,7 @@ package be.idevelop.fiber;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
-class ReferenceSerializer extends AbstractSerializer<Object> implements Serializer<Object> {
+class ReferenceSerializer extends Serializer<Object> {
 
     ReferenceSerializer() {
         super(Object.class);

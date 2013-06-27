@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class ShortSerializer extends AbstractSerializer<Short> implements Serializer<Short> {
+final class ShortSerializer extends Serializer<Short> {
 
     ShortSerializer() {
         super(Short.TYPE);

@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class LongSerializer extends AbstractSerializer<Long> implements Serializer<Long> {
+final class LongSerializer extends Serializer<Long> {
 
     LongSerializer() {
         super(Long.TYPE);

@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-class StringBuilderSerializer extends AbstractSerializer<StringBuilder> implements Serializer<StringBuilder> {
+class StringBuilderSerializer extends Serializer<StringBuilder> {
 
     protected StringBuilderSerializer() {
         super(StringBuilder.class);

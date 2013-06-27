@@ -33,7 +33,7 @@ import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.EMPTY_MAP;
 
-public class CollectionSerializer<C extends Collection> extends AbstractSerializer<C> implements Serializer<C> {
+public class CollectionSerializer<C extends Collection> extends Serializer<C> {
 
     protected CollectionSerializer(Class<C> collectionClass) {
         super(collectionClass);

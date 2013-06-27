@@ -24,7 +24,7 @@
 
 package be.idevelop.fiber;
 
-final class FloatSerializer extends AbstractSerializer<Float> implements Serializer<Float> {
+final class FloatSerializer extends Serializer<Float> {
 
     FloatSerializer() {
         super(Float.TYPE);
