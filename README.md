@@ -1,16 +1,18 @@
-fiber
+Fiber
 =====
 
 A java serialization engine. Fast, compact &amp; thread safe serialization.
 
-Started this project out of frustration Kryo is not thread safe. Is not as fast or compact as Kryo yet, but it's already doing a pretty good job for being only 3 days old.
+Started this project out of frustration Kryo is not thread safe. Is not as fast or compact as Kryo yet, but it's already doing a pretty good job for being only a few days old.
 
 If you want to use this library, keep the following in mind:
 * all classes should be registered upfront.
 * if a class doesn't have a default constructor (or for effeciency) you might want to write (and register!) your own serializer. Take a look at the provided ones.
 * Fiber should be configured in exactly the same way at the writing side as at the reading side. I.e. Classes and their serializers should have been registered in exactly the same order.
 
-More info to come..
+If someone would like to test it using https://github.com/eishay/jvm-serializers/wiki, be my guest :)
+
+More info to come.. but in the mean time, start forking!
 
 License
 =======
