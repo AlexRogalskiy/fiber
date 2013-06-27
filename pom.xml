@@ -129,7 +129,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.6.3</version>
+                    <version>0.6.4-SNAPSHOT</version>
                     <configuration>
                         <skip>${skipTests}</skip>
                     </configuration>
@@ -164,5 +164,19 @@
             <url>http://www.i-develop.be/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>i-develop.snapshots</id>
+            <name>Public Snapshot repository</name>
+            <url>http://www.i-develop.be/nexus/content/groups/public-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>
