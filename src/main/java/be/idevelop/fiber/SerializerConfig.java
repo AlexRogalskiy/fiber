@@ -163,7 +163,7 @@ final class SerializerConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public final <T> Serializer<? super T> getSerializer(T o) {
+    public <T> Serializer<? super T> getSerializer(T o) {
         if (o == null) {
             return NULL_SERIALIZER;
         } else if (REFERENCE_RESOLVER.contains(o)) {
