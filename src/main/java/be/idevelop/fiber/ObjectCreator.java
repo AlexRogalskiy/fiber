@@ -61,7 +61,7 @@ enum ObjectCreator {
             constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("No default constructor found for class " + clazz.getName() + ". Implement a custom serializer.");
+            throw new IllegalArgumentException("No default constructor found for class " + clazz.getName() + ". Implement a custom serializer.", e);
         }
         return constructor;
     }
