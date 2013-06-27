@@ -24,6 +24,7 @@
 
 package be.idevelop.fiber;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Comparator;
@@ -84,7 +85,7 @@ final class ObjectSerializer<T> extends AbstractSerializer<T> implements Seriali
         }
     }
 
-    private static class FieldComparator implements Comparator<Field> {
+    private static class FieldComparator implements Comparator<Field>, Serializable {
 
         @Override
         public int compare(Field f1, Field f2) {
