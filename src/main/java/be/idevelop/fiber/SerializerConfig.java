@@ -38,17 +38,17 @@ import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 final class SerializerConfig {
 
-    private static final Map<Class, Class> primitiveWrapperMap = new HashMap<Class, Class>(8);
+    private static final Map<Class, Class> PRIMITIVE_WRAPPER_MAP = new HashMap<Class, Class>(8);
 
     static {
-        primitiveWrapperMap.put(int.class, Integer.class);
-        primitiveWrapperMap.put(boolean.class, Boolean.class);
-        primitiveWrapperMap.put(byte.class, Byte.class);
-        primitiveWrapperMap.put(char.class, Character.class);
-        primitiveWrapperMap.put(double.class, Double.class);
-        primitiveWrapperMap.put(short.class, Short.class);
-        primitiveWrapperMap.put(float.class, Float.class);
-        primitiveWrapperMap.put(long.class, Long.class);
+        PRIMITIVE_WRAPPER_MAP.put(int.class, Integer.class);
+        PRIMITIVE_WRAPPER_MAP.put(boolean.class, Boolean.class);
+        PRIMITIVE_WRAPPER_MAP.put(byte.class, Byte.class);
+        PRIMITIVE_WRAPPER_MAP.put(char.class, Character.class);
+        PRIMITIVE_WRAPPER_MAP.put(double.class, Double.class);
+        PRIMITIVE_WRAPPER_MAP.put(short.class, Short.class);
+        PRIMITIVE_WRAPPER_MAP.put(float.class, Float.class);
+        PRIMITIVE_WRAPPER_MAP.put(long.class, Long.class);
     }
 
     private static final Serializer NULL_SERIALIZER = new NullSerializer();
@@ -122,7 +122,7 @@ final class SerializerConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public final void register(Class clazz) {
+    public void register(Class clazz) {
         if (!clazz.isInterface() && !registeredClasses.contains(clazz)) {
             if (Collection.class.isAssignableFrom(clazz)) {
                 registeredClasses.add(clazz);
@@ -147,7 +147,7 @@ final class SerializerConfig {
         this.serializerMap.put(serializer.getId(), serializer);
     }
 
-    public final void register(Serializer serializer) {
+    public void register(Serializer serializer) {
         Class serializedClass = convertPrimitiveClassIfNeeded(serializer.getSerializedClass());
         if (!this.serializerClassMap.containsKey(serializedClass)) {
             serializer.setId(++nextId);
@@ -159,7 +159,7 @@ final class SerializerConfig {
     }
 
     private Class convertPrimitiveClassIfNeeded(Class clazz) {
-        return clazz != null && clazz.isPrimitive() ? primitiveWrapperMap.get(clazz) : clazz;
+        return clazz != null && clazz.isPrimitive() ? PRIMITIVE_WRAPPER_MAP.get(clazz) : clazz;
     }
 
     @SuppressWarnings("unchecked")
@@ -174,7 +174,7 @@ final class SerializerConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public final <T> Serializer<? super T> getSerializerForClass(Class<T> clazz) {
+    public <T> Serializer<? super T> getSerializerForClass(Class<T> clazz) {
         if (clazz.isArray()) {
             return ARRAY_SERIALIZER;
         } else if (serializerClassMap.containsKey(clazz)) {
@@ -185,7 +185,7 @@ final class SerializerConfig {
         throw new IllegalArgumentException("Type not supported " + clazz.getName());
     }
 
-    public final Serializer getSerializer(short id) {
+    public Serializer getSerializer(short id) {
         if (serializerMap.containsKey(id)) {
             return serializerMap.get(id);
         } else {
@@ -195,7 +195,7 @@ final class SerializerConfig {
 
     short getClassId(Class clazz) {
         if (clazz.isPrimitive()) {
-            return this.serializerClassMap.get(primitiveWrapperMap.get(clazz)).getId();
+            return this.serializerClassMap.get(PRIMITIVE_WRAPPER_MAP.get(clazz)).getId();
         } else if (this.serializerClassMap.containsKey(clazz)) {
             return this.serializerClassMap.get(clazz).getId();
         } else {
