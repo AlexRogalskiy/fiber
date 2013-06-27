@@ -70,14 +70,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                    <showDeprecation>true</showDeprecation>
-                    <showWarnings>true</showWarnings>
-                    <fork>true</fork>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -129,7 +121,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.6.4-SNAPSHOT</version>
+                    <version>0.6.1-SNAPSHOT</version>
                     <configuration>
                         <skip>${skipTests}</skip>
                     </configuration>
