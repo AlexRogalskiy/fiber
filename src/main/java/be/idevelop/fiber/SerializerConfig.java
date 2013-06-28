@@ -104,6 +104,7 @@ final class SerializerConfig {
         register(new CurrencySerializer());
         register(new StringBufferSerializer());
         register(new StringBuilderSerializer());
+        register(new UUIDSerializer());
     }
 
     @SuppressWarnings("unchecked")
