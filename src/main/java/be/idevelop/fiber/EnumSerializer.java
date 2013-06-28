@@ -24,22 +24,22 @@
 
 package be.idevelop.fiber;
 
-public final class EnumSerializer extends Serializer<Enum> {
+public final class EnumSerializer<E extends Enum> extends Serializer<E> {
 
-    private final Enum[] constants;
+    private final E[] constants;
 
-    public EnumSerializer(Class<Enum> serializedClass) {
+    public EnumSerializer(Class<E> serializedClass) {
         super(serializedClass);
         this.constants = serializedClass.getEnumConstants();
     }
 
     @Override
-    public Enum read(Input input) {
+    public E read(Input input) {
         return constants[input.readInteger()];
     }
 
     @Override
-    public void write(Enum object, Output output) {
+    public void write(E object, Output output) {
         output.writeInt(object.ordinal());
     }
 }
