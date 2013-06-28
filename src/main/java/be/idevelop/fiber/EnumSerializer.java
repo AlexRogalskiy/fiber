@@ -24,11 +24,11 @@
 
 package be.idevelop.fiber;
 
-final class EnumSerializer extends Serializer<Enum> {
+public final class EnumSerializer extends Serializer<Enum> {
 
     private final Enum[] constants;
 
-    EnumSerializer(Class<Enum> serializedClass) {
+    public EnumSerializer(Class<Enum> serializedClass) {
         super(serializedClass);
         this.constants = serializedClass.getEnumConstants();
     }

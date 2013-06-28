@@ -35,7 +35,7 @@ import static java.util.Collections.EMPTY_MAP;
 
 public class CollectionSerializer<C extends Collection> extends Serializer<C> {
 
-    protected CollectionSerializer(Class<C> collectionClass) {
+    public CollectionSerializer(Class<C> collectionClass) {
         super(collectionClass);
 
         OBJECT_CREATOR.registerClass(collectionClass);

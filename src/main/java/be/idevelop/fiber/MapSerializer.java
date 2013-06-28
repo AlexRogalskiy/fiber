@@ -32,7 +32,7 @@ import static java.util.Collections.EMPTY_MAP;
 
 public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> {
 
-    protected MapSerializer(Class<M> mapClass) {
+    public MapSerializer(Class<M> mapClass) {
         super(mapClass);
 
         OBJECT_CREATOR.registerClass(mapClass);

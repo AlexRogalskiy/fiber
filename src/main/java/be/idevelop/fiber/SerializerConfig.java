@@ -70,22 +70,22 @@ final class SerializerConfig {
         this.serializerClassMap = new HashMap<Class, Serializer>();
         this.registeredClasses = new HashSet<Class>();
 
-        registerSpecialSerializers();
+        registerSpecialClassesAndSerializers();
         registerPrimitiveSerializers();
         registerJdkCommonClassSerializers();
         registerCollectionSerializers();
         registerMapSerializers();
     }
 
-    private void registerSpecialSerializers() {
+    private void registerSpecialClassesAndSerializers() {
         register(Object.class);
         registerSpecialSerializer(NULL_SERIALIZER);
         registerSpecialSerializer(REFERENCE_SERIALIZER);
         registerSpecialSerializer(ARRAY_SERIALIZER);
+        register(new ClassSerializer());
     }
 
     private void registerPrimitiveSerializers() {
-        register(new ClassSerializer());
         register(new IntegerSerializer());
         register(new BooleanSerializer());
         register(new ByteSerializer());
