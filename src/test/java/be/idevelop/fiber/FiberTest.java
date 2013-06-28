@@ -27,6 +27,7 @@ package be.idevelop.fiber;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -135,6 +136,16 @@ public class FiberTest {
         fiber.register(ComplexClassWithDefaultConstructorAndReferences.class);
 
         testSerialization(complexClass);
+    }
+
+    @Test
+    public void testSerializeToInputStreamAndDeserializeFromStream() {
+        ComplexClassWithDefaultConstructorAndReferences complexClass = ComplexClassWithDefaultConstructorAndReferences.createNewInstance();
+        fiber.register(ComplexClassWithDefaultConstructorAndReferences.class);
+
+        InputStream stream = fiber.serializeToStream(complexClass);
+        Object result = fiber.deserializeFromStream(stream);
+        assertEquals(complexClass, result);
     }
 
     private void testSerialization(Object value) {

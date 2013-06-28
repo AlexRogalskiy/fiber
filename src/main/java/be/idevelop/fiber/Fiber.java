@@ -24,7 +24,11 @@
 
 package be.idevelop.fiber;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
@@ -46,6 +50,11 @@ public final class Fiber {
         }
     }
 
+    public InputStream serializeToStream(Object o) {
+        ByteBuffer buffer = serialize(o);
+        return new ByteBufferInputStream(buffer);
+    }
+
     public <T> T deserialize(ByteBuffer byteBuffer) {
         try {
             Input input = new Input(config, byteBuffer);
@@ -53,6 +62,28 @@ public final class Fiber {
         } finally {
             REFERENCE_RESOLVER.clear();
         }
+    }
+
+    public <T> T deserializeFromStream(InputStream stream) {
+        ByteBuffer byteBuffer = createByteBufferFromInputStream(stream);
+        return deserialize(byteBuffer);
+    }
+
+    private ByteBuffer createByteBufferFromInputStream(InputStream stream) {
+        int available;
+        try {
+            available = stream.available();
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not create byte buffer for input stream", e);
+        }
+        ReadableByteChannel channel = Channels.newChannel(stream);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(available);
+        try {
+            channel.read(byteBuffer);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read input stream into byte buffer", e);
+        }
+        return (ByteBuffer) byteBuffer.flip();
     }
 
     public void register(Class clazz) {
