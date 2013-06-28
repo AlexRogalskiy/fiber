@@ -32,7 +32,7 @@ import java.nio.charset.CharsetEncoder;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
-final class Output {
+public final class Output {
 
     private static final int DEFAULT_SIZE = 1024 * 1024;
 

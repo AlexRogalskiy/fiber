@@ -31,7 +31,7 @@ import java.nio.charset.CharsetDecoder;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
-final class Input {
+public final class Input {
 
     private final SerializerConfig config;
 
