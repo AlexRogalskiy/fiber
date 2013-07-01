@@ -36,7 +36,7 @@ import java.util.TreeSet;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
-final class SerializerConfig {
+public final class SerializerConfig {
 
     private static final Map<Class, Class> PRIMITIVE_WRAPPER_MAP = new HashMap<Class, Class>(8);
 
