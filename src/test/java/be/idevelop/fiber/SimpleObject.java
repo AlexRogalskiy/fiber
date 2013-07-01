@@ -28,7 +28,7 @@ public class SimpleObject {
 
     private final int value;
 
-    private SimpleObject() {
+    protected SimpleObject() {
         this.value = 0;
     }
 
@@ -57,5 +57,12 @@ public class SimpleObject {
         SimpleObject that = (SimpleObject) o;
 
         return value == that.value;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleObject{" +
+                "value=" + value +
+                "} " + super.toString();
     }
 }

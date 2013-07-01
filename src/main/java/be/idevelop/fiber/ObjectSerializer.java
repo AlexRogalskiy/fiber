@@ -53,6 +53,9 @@ public class ObjectSerializer<T> extends Serializer<T> {
                 set.add(field);
             }
         }
+        if (clazz.getSuperclass() != null && !Object.class.equals(clazz.getSuperclass())) {
+            set.addAll(getFields(clazz.getSuperclass(), config));
+        }
         return set;
     }
 
