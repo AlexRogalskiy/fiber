@@ -27,11 +27,8 @@ package be.idevelop.fiber;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
-import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.EMPTY_SET;
 
 public class CollectionSerializer<C extends Collection> extends Serializer<C> {
 
@@ -45,17 +42,8 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> {
     @Override
     public C read(Input input) {
         int length = input.readInteger();
-        C collection;
-        if (length == 0) {
-            if (List.class.isAssignableFrom(getSerializedClass())) {
-                collection = (C) EMPTY_LIST;
-            } else if (Set.class.isAssignableFrom(getSerializedClass())) {
-                collection = (C) EMPTY_SET;
-            } else {
-                collection = createNewInstance(input.createReferenceId());
-            }
-        } else {
-            collection = createNewInstance(input.createReferenceId());
+        C collection = createNewInstance(input.createReferenceId());
+        if (length > 0) {
             List<Object> tempList = new ArrayList<Object>(length);
             for (int i = 0; i < length; i++) {
                 tempList.add(input.read());

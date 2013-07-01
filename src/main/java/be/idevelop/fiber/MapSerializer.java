@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
-import static java.util.Collections.EMPTY_MAP;
 
 public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> {
 
@@ -42,11 +41,8 @@ public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> 
     @Override
     public M read(Input input) {
         int length = input.readInteger();
-        M map;
-        if (length == 0) {
-            map = (M) EMPTY_MAP;
-        } else {
-            map = OBJECT_CREATOR.createNewInstance(getSerializedClass(), input.createReferenceId());
+        M map = OBJECT_CREATOR.createNewInstance(getSerializedClass(), input.createReferenceId());
+        if (length > 0) {
             Map<Object, Object> tempMap = new HashMap<Object, Object>(length);
             for (int i = 0; i < length; i++) {
                 tempMap.put(input.read(), input.read());
