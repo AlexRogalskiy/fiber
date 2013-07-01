@@ -33,7 +33,7 @@ import java.util.TreeSet;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 
-public final class ObjectSerializer<T> extends Serializer<T> {
+public class ObjectSerializer<T> extends Serializer<T> {
 
     private final SortedSet<Field> fields;
 
@@ -58,7 +58,7 @@ public final class ObjectSerializer<T> extends Serializer<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public T read(Input input) {
+    public final T read(Input input) {
         T t = OBJECT_CREATOR.createNewInstance(getSerializedClass(), input.createReferenceId());
         for (Field field : fields) {
             readField(input, t, field);
@@ -67,7 +67,7 @@ public final class ObjectSerializer<T> extends Serializer<T> {
     }
 
     @Override
-    public void write(Object object, Output output) {
+    public final void write(Object object, Output output) {
         for (Field field : fields) {
             try {
                 output.write(field.get(object));
