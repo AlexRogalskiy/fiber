@@ -31,7 +31,7 @@ import java.util.Set;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.EMPTY_SET;
 
 public class CollectionSerializer<C extends Collection> extends Serializer<C> {
 
@@ -50,7 +50,7 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> {
             if (List.class.isAssignableFrom(getSerializedClass())) {
                 collection = (C) EMPTY_LIST;
             } else if (Set.class.isAssignableFrom(getSerializedClass())) {
-                collection = (C) EMPTY_MAP;
+                collection = (C) EMPTY_SET;
             } else {
                 collection = createNewInstance(input.createReferenceId());
             }
