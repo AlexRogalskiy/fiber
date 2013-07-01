@@ -93,4 +93,8 @@ public final class Fiber {
     public void register(Serializer serializer) {
         this.config.register(serializer);
     }
+
+    public SerializerConfig getConfig() {
+        return config;
+    }
 }
