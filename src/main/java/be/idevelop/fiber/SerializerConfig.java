@@ -180,7 +180,7 @@ public final class SerializerConfig {
             return ARRAY_SERIALIZER;
         } else if (serializerClassMap.containsKey(clazz)) {
             return serializerClassMap.get(clazz);
-        } else if (!clazz.isEnum() && clazz.getSuperclass() != null) {
+        } else if (!clazz.isEnum() && clazz.getSuperclass() != null && clazz.getSuperclass() != Object.class) {
             return getSerializerForClass(clazz.getSuperclass());
         }
         throw new IllegalArgumentException("Type not supported " + clazz.getName());
