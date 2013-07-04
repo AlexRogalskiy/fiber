@@ -30,11 +30,12 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 
+import static be.idevelop.fiber.ByteBufferRing.BYTE_BUFFER_RING;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class Output {
 
-    private static final int DEFAULT_SIZE = 1024 * 1024;
+    private static final int DEFAULT_SIZE = 1024 * 8;
 
     private final SerializerConfig config;
 
@@ -48,7 +49,7 @@ public final class Output {
 
     public Output(SerializerConfig config, int bufferSize) {
         this.config = config;
-        this.byteBuffer = ByteBuffer.allocateDirect(bufferSize);
+        this.byteBuffer = BYTE_BUFFER_RING.allocate(bufferSize);
     }
 
     public ByteBuffer getByteBuffer() {
