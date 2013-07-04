@@ -33,7 +33,7 @@ import java.util.TreeSet;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 
-public class ObjectSerializer<T> extends Serializer<T> {
+public final class ObjectSerializer<T> extends Serializer<T> {
 
     private final SortedSet<Field> fields;
 
