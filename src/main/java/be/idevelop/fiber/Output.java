@@ -38,7 +38,7 @@ public final class Output {
 
     private final SerializerConfig config;
 
-    private final ThreadLocal<CharsetEncoder> charsetEncoder = new ThreadLocal<CharsetEncoder>();
+    private static final ThreadLocal<CharsetEncoder> CHARSET_ENCODER = new ThreadLocal<CharsetEncoder>();
 
     private ByteBuffer byteBuffer;
 
@@ -109,10 +109,10 @@ public final class Output {
     }
 
     private CharsetEncoder getEncoder() {
-        if (charsetEncoder.get() == null) {
-            charsetEncoder.set(Charset.forName("UTF-8").newEncoder());
+        if (CHARSET_ENCODER.get() == null) {
+            CHARSET_ENCODER.set(Charset.forName("UTF-8").newEncoder());
         }
-        return charsetEncoder.get().reset();
+        return CHARSET_ENCODER.get().reset();
     }
 
     private int createReferenceId() {

@@ -35,7 +35,7 @@ public final class Input {
 
     private final SerializerConfig config;
 
-    private final ThreadLocal<CharsetDecoder> charsetDecoder = new ThreadLocal<CharsetDecoder>();
+    private static final ThreadLocal<CharsetDecoder> CHARSET_DECODER = new ThreadLocal<CharsetDecoder>();
 
     private final ByteBuffer byteBuffer;
 
@@ -102,10 +102,10 @@ public final class Input {
     }
 
     private CharsetDecoder getDecoder() {
-        if (charsetDecoder.get() == null) {
-            charsetDecoder.set(Charset.forName("UTF-8").newDecoder());
+        if (CHARSET_DECODER.get() == null) {
+            CHARSET_DECODER.set(Charset.forName("UTF-8").newDecoder());
         }
-        return charsetDecoder.get().reset();
+        return CHARSET_DECODER.get().reset();
     }
 
     public int createReferenceId() {
