@@ -33,14 +33,13 @@ import java.util.TreeSet;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 
-public final class ObjectSerializer<T> extends Serializer<T> {
+public final class ObjectSerializer<T> extends Serializer<T> implements GenericObjectSerializer {
 
     private final SortedSet<Field> fields;
 
     public ObjectSerializer(Class<T> clazz, SerializerConfig config) {
         super(clazz);
 
-        OBJECT_CREATOR.registerClass(clazz);
         this.fields = getFields(clazz, config);
     }
 
@@ -62,7 +61,7 @@ public final class ObjectSerializer<T> extends Serializer<T> {
     @SuppressWarnings("unchecked")
     @Override
     public final T read(Input input) {
-        T t = OBJECT_CREATOR.createNewInstance(getSerializedClass(), input.createReferenceId());
+        T t = OBJECT_CREATOR.createNewInstance(getId());
         for (Field field : fields) {
             readField(input, t, field);
         }

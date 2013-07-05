@@ -39,6 +39,6 @@ class ReferenceSerializer extends Serializer<Object> {
 
     @Override
     public void write(Object object, Output output) {
-        output.writeInt(REFERENCE_RESOLVER.getId(object));
+        output.writeInt(REFERENCE_RESOLVER.getReferenceId(object));
     }
 }

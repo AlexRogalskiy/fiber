@@ -24,6 +24,9 @@ public class PerformanceTest {
 
     @BeforeClass
     public static void setUpPerformanceTest() {
+        System.out.println(String.format("%10s\t%8s\t%8s\t%8s\t%11s", "Name", "Min", "Avg", "Max", "Total"));
+        System.gc();
+
         fiber = new Fiber();
         fiber.register(SimpleObject.class);
         fiber.register(ComplexClassWithDefaultConstructorAndReferences.class);
@@ -38,6 +41,7 @@ public class PerformanceTest {
         warmUp(o);
         warmUp(simpleObject);
         warmUp(complexObject);
+
     }
 
     @After
@@ -46,12 +50,27 @@ public class PerformanceTest {
     }
 
     @org.junit.Test
-    public void testPerformance() {
-        System.out.println("Name\t\t\tMin\t\t\tAvg\t\t\tMax\t\t  Total");
+    public void testConstructor() {
         new Test().execute(new ConstructorTest(), "construct", REPEAT);
+    }
+
+    @org.junit.Test
+    public void testSimpleObjectSerialize() {
         new Test().execute(new SimpleObjectSerializeTest(), "simple S.", REPEAT);
+    }
+
+    @org.junit.Test
+    public void testSimpleObjectDeserialize() {
         new Test().execute(new SimpleObjectDeserializeTest(), "simple D.", REPEAT);
+    }
+
+    @org.junit.Test
+    public void testComplexObjectSerialize() {
         new Test().execute(new ComplexObjectSerializeTest(), "complex S.", REPEAT);
+    }
+
+    @org.junit.Test
+    public void testComplexObjectDeserialize() {
         new Test().execute(new ComplexObjectDeserializeTest(), "complex D.", REPEAT);
     }
 
@@ -80,7 +99,7 @@ public class PerformanceTest {
                 testCase.resetTime();
             }
 
-            System.out.println(String.format("%10s\t%8d\t%8d\t%8d\t%10d", name, minInNano, totalInNano / (testCase.iterations * repeat), maxInNano, totalInNano));
+            System.out.println(String.format("%10s\t%8d\t%8d\t%8d\t%11d", name, minInNano, totalInNano / (testCase.iterations * repeat), maxInNano, totalInNano));
         }
     }
 
@@ -140,7 +159,6 @@ public class PerformanceTest {
         @Override
         public void test() {
             fiber.deserialize(byteBuffer);
-            byteBuffer.rewind();
         }
     }
 
@@ -168,7 +186,6 @@ public class PerformanceTest {
         @Override
         public void test() {
             fiber.deserialize(byteBuffer);
-            byteBuffer.rewind();
         }
     }
 
@@ -196,7 +213,6 @@ public class PerformanceTest {
         @Override
         public void test() {
             fiber.deserialize(byteBuffer);
-            byteBuffer.flip();
         }
     }
 }

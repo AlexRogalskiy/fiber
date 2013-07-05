@@ -30,19 +30,17 @@ import java.util.List;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 
-public class CollectionSerializer<C extends Collection> extends Serializer<C> {
+public class CollectionSerializer<C extends Collection> extends Serializer<C> implements GenericObjectSerializer {
 
     public CollectionSerializer(Class<C> collectionClass) {
         super(collectionClass);
-
-        OBJECT_CREATOR.registerClass(collectionClass);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public C read(Input input) {
         int length = input.readInteger();
-        C collection = createNewInstance(input.createReferenceId());
+        C collection = createNewInstance();
         if (length > 0) {
             List<Object> tempList = new ArrayList<Object>(length);
             for (int i = 0; i < length; i++) {
@@ -53,8 +51,8 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> {
         return collection;
     }
 
-    protected C createNewInstance(int referenceId) {
-        return OBJECT_CREATOR.createNewInstance(getSerializedClass(), referenceId);
+    protected C createNewInstance() {
+        return OBJECT_CREATOR.createNewInstance(getId());
     }
 
     @Override

@@ -24,71 +24,115 @@
 
 package be.idevelop.fiber;
 
-import java.util.IdentityHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 enum ReferenceResolver {
 
     REFERENCE_RESOLVER;
 
-    private static final ThreadLocal<ReferenceContainer> REFERENCE_CONTAINER_THREAD_LOCAL = new ThreadLocal<ReferenceContainer>();
+    private static final ThreadLocal<SerializeReferenceContainer> SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL = new InheritableThreadLocal<SerializeReferenceContainer>();
 
-    void add(int id, Object o) {
-        getReferenceContainer().add(id, o);
+    private static final ThreadLocal<DeserializeReferenceContainer> DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL = new InheritableThreadLocal<DeserializeReferenceContainer>();
+
+    static {
+        SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new SerializeReferenceContainer());
+        DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new DeserializeReferenceContainer());
     }
 
-    void clear() {
-        getReferenceContainer().clear();
-        REFERENCE_CONTAINER_THREAD_LOCAL.remove();
+    void addForSerialize(Object o) {
+        getSerializeReferenceContainer().add(o);
+    }
+
+    <T> T addForDeserialize(T o) {
+        return getDeserializeReferenceContainer().add(o);
+    }
+
+    Object getReference(int referenceId) {
+        return getDeserializeReferenceContainer().getReference(referenceId);
+    }
+
+    void clearSerialize() {
+        getSerializeReferenceContainer().clear();
+    }
+
+    void clearDeserialize() {
+        getDeserializeReferenceContainer().clear();
     }
 
     boolean contains(Object o) {
-        return getReferenceContainer().contains(o);
+        return getSerializeReferenceContainer().contains(o);
     }
 
-    Object getReference(int id) {
-        return getReferenceContainer().getReference(id);
+    int getReferenceId(Object o) {
+        return getSerializeReferenceContainer().getId(o);
     }
 
-    int getId(Object o) {
-        return getReferenceContainer().getId(o);
+    private SerializeReferenceContainer getSerializeReferenceContainer() {
+        return SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.get();
     }
 
-    private ReferenceContainer getReferenceContainer() {
-        if (REFERENCE_CONTAINER_THREAD_LOCAL.get() == null) {
-            REFERENCE_CONTAINER_THREAD_LOCAL.set(new ReferenceContainer());
+    private DeserializeReferenceContainer getDeserializeReferenceContainer() {
+        return DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.get();
+    }
+
+    private static class SerializeReferenceContainer {
+
+        private int referenceId = 0;
+
+        private Set<Integer> objectIds = new HashSet<Integer>();
+
+        private Map<Integer, Integer> objectIdToReferenceId = new HashMap<Integer, Integer>();
+
+        void clear() {
+            referenceId = 0;
+            objectIds.clear();
+            objectIdToReferenceId.clear();
         }
-        return REFERENCE_CONTAINER_THREAD_LOCAL.get();
-    }
 
-    private static class ReferenceContainer {
-
-        private Map<Integer, Object> referencedObjects = new IdentityHashMap<Integer, Object>();
-
-        private Map<Object, Integer> references = new IdentityHashMap<Object, Integer>();
-
-        public void clear() {
-            referencedObjects.clear();
-            references.clear();
-        }
-
-        public void add(int id, Object o) {
-            if (o != null && !referencedObjects.containsKey(id) && !references.containsKey(o)) {
-                referencedObjects.put(id, o);
-                references.put(o, id);
+        void add(Object o) {
+            if (o != null) {
+                int objectId = System.identityHashCode(o);
+                if (!objectIds.contains(objectId)) {
+                    objectIds.add(objectId);
+                    objectIdToReferenceId.put(objectId, referenceId++);
+                }
             }
         }
 
-        public boolean contains(Object o) {
-            return o != null && references.containsKey(o);
+        boolean contains(Object o) {
+            return o != null && objectIds.contains(System.identityHashCode(o));
         }
 
-        public Object getReference(int id) {
-            return referencedObjects.get(id);
-        }
-
-        public int getId(Object o) {
-            return references.get(o);
+        int getId(Object o) {
+            return objectIdToReferenceId.get(System.identityHashCode(o));
         }
     }
+
+    private static class DeserializeReferenceContainer {
+
+        private static final int MAX_OBJECT_INSTANCES = 8 * 1024;
+
+        private int referenceId = 0;
+
+        private Object[] objects = new Object[MAX_OBJECT_INSTANCES];
+
+        <T> T add(T o) {
+            if (o != null) {
+                objects[referenceId++] = o;
+            }
+            return o;
+        }
+
+        public Object getReference(int referenceId) {
+            return objects[referenceId];
+        }
+
+        void clear() {
+            referenceId = 0;
+        }
+    }
+
 }

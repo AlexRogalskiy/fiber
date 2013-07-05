@@ -27,8 +27,6 @@ package be.idevelop.fiber;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
@@ -36,23 +34,17 @@ enum ObjectCreator {
 
     OBJECT_CREATOR;
 
-    private Map<Class, Constructor> constructorMap = new HashMap<Class, Constructor>();
+    private Constructor[] constructors = new Constructor[Short.MAX_VALUE];
 
-    public void registerClass(Class clazz) {
+    public void registerClass(Class clazz, short classId) {
         if (!Modifier.isAbstract(clazz.getModifiers())) {
-            constructorMap.put(clazz, getDefaultConstructor(clazz));
+            constructors[classId] = getDefaultConstructor(clazz);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T createNewInstance(Class<T> clazz, int referenceId) {
-        if (constructorMap.containsKey(clazz)) {
-            T newInstance = createNewInstance((Constructor<T>) constructorMap.get(clazz));
-            REFERENCE_RESOLVER.add(referenceId, newInstance);
-            return newInstance;
-        } else {
-            throw new IllegalArgumentException("No constructor registered for class " + clazz + ".");
-        }
+    public <T> T createNewInstance(short classId) {
+        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<T>) constructors[classId]));
     }
 
     private <T> Constructor<T> getDefaultConstructor(Class<T> clazz) {

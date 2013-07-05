@@ -30,7 +30,6 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 
-import static be.idevelop.fiber.ByteBufferRing.BYTE_BUFFER_RING;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class Output {
@@ -49,17 +48,17 @@ public final class Output {
 
     public Output(SerializerConfig config, int bufferSize) {
         this.config = config;
-        this.byteBuffer = BYTE_BUFFER_RING.allocate(bufferSize);
+        this.byteBuffer = config.getByteBufferPool().allocate(bufferSize);
     }
 
     public ByteBuffer getByteBuffer() {
-        return (ByteBuffer) byteBuffer.flip();
+        return (ByteBuffer) byteBuffer.reset();
     }
 
     public void write(Object o) {
         Serializer<? super Object> serializer = this.config.getSerializer(o);
         this.writeShort(serializer.getId());
-        REFERENCE_RESOLVER.add(this.createReferenceId(), o);
+        REFERENCE_RESOLVER.addForSerialize(o);
         serializer.write(o, this);
     }
 
@@ -116,7 +115,4 @@ public final class Output {
         return CHARSET_ENCODER.get().reset();
     }
 
-    private int createReferenceId() {
-        return this.byteBuffer.position();
-    }
 }

@@ -148,6 +148,16 @@ public class FiberTest {
         assertEquals(complexClass, result);
     }
 
+    @Test
+    public void testSerializeToBytesAndDeserializeFromBytes() {
+        ComplexClassWithDefaultConstructorAndReferences complexClass = ComplexClassWithDefaultConstructorAndReferences.createNewInstance();
+        fiber.register(ComplexClassWithDefaultConstructorAndReferences.class);
+
+        byte[] bytes = fiber.serializeToBytes(complexClass);
+        Object result = fiber.deserializeFromBytes(bytes);
+        assertEquals(complexClass, result);
+    }
+
     private void testSerialization(Object value) {
         ByteBuffer serialized = fiber.serialize(value);
         Object result = fiber.deserialize(serialized);

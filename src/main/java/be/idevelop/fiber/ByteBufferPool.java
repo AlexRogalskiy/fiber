@@ -26,22 +26,18 @@ package be.idevelop.fiber;
 
 import java.nio.ByteBuffer;
 
-enum ByteBufferRing {
+class ByteBufferPool {
 
-    BYTE_BUFFER_RING;
-
-    private static final int MB_128 = 1024 * 1024 * 128;
+    private final ByteBuffer byteBuffer;
 
     int start;
 
-    private ByteBuffer byteBuffer;
-
-    private ByteBufferRing() {
-        size(MB_128);
+    ByteBufferPool() {
+        this(1024 * 1024 * 64);
     }
 
-    public synchronized void size(int newSize) {
-        byteBuffer = ByteBuffer.allocateDirect(newSize);
+    ByteBufferPool(int sizeInBytes) {
+        byteBuffer = ByteBuffer.allocateDirect(sizeInBytes);
         start = byteBuffer.position();
     }
 
@@ -50,7 +46,7 @@ enum ByteBufferRing {
             start = byteBuffer.position();
         }
         int end = start + bufferSize;
-        ByteBuffer allocated = (ByteBuffer) byteBuffer.slice().position(start).limit(end);
+        ByteBuffer allocated = (ByteBuffer) byteBuffer.slice().position(start).limit(end).mark();
         start = end;
         return allocated;
     }

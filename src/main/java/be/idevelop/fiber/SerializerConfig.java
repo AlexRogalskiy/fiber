@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class SerializerConfig {
@@ -59,14 +60,18 @@ public final class SerializerConfig {
 
     private short nextId = -1;
 
-    private Map<Short, Serializer> serializerMap;
+    private Serializer[] serializers;
 
     private Map<Class, Serializer> serializerClassMap;
 
     private Set<Class> registeredClasses;
 
+    private ByteBufferPool byteBufferPool;
+
     SerializerConfig() {
-        this.serializerMap = new HashMap<Short, Serializer>();
+        this.byteBufferPool = new ByteBufferPool();
+
+        this.serializers = new Serializer[Short.MAX_VALUE];
         this.serializerClassMap = new HashMap<Class, Serializer>();
         this.registeredClasses = new HashSet<Class>();
 
@@ -145,16 +150,19 @@ public final class SerializerConfig {
 
     private void registerSpecialSerializer(Serializer serializer) {
         serializer.setId(++nextId);
-        this.serializerMap.put(serializer.getId(), serializer);
+        this.serializers[nextId] = serializer;
     }
 
     public void register(Serializer serializer) {
         Class serializedClass = convertPrimitiveClassIfNeeded(serializer.getSerializedClass());
         if (!this.serializerClassMap.containsKey(serializedClass)) {
             serializer.setId(++nextId);
-            this.serializerMap.put(serializer.getId(), serializer);
+            this.serializers[nextId] = serializer;
             if (serializedClass != null) {
                 this.serializerClassMap.put(serializedClass, serializer);
+                if (serializer instanceof GenericObjectSerializer) {
+                    OBJECT_CREATOR.registerClass(serializer.getSerializedClass(), serializer.getId());
+                }
             }
         }
     }
@@ -187,11 +195,7 @@ public final class SerializerConfig {
     }
 
     public Serializer getSerializer(short id) {
-        if (serializerMap.containsKey(id)) {
-            return serializerMap.get(id);
-        } else {
-            throw new IllegalArgumentException("No serializer registered for class id " + id);
-        }
+        return serializers[id];
     }
 
     short getClassId(Class clazz) {
@@ -205,11 +209,11 @@ public final class SerializerConfig {
     }
 
     Class getClassForId(short classId) {
-        if (this.serializerMap.containsKey(classId)) {
-            return this.serializerMap.get(classId).getSerializedClass();
-        } else {
-            throw new IllegalStateException("No class found for class id (" + classId + ").");
-        }
+        return this.serializers[classId].getSerializedClass();
+    }
+
+    public ByteBufferPool getByteBufferPool() {
+        return byteBufferPool;
     }
 
     private static final class NullSerializer extends Serializer {

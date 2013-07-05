@@ -33,27 +33,20 @@ import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class Input {
 
-    private final SerializerConfig config;
-
     private static final ThreadLocal<CharsetDecoder> CHARSET_DECODER = new ThreadLocal<CharsetDecoder>();
+
+    private final SerializerConfig config;
 
     private final ByteBuffer byteBuffer;
 
     Input(SerializerConfig config, ByteBuffer byteBuffer) {
         this.config = config;
-        this.byteBuffer = byteBuffer;
+        this.byteBuffer = (ByteBuffer) byteBuffer.mark();
     }
 
     @SuppressWarnings("unchecked")
     public <T> T read() {
-        short id = this.readShort();
-        int referenceId = this.createReferenceId();
-        Serializer<T> serializer = config.getSerializer(id);
-        T object = serializer.read(this);
-        // added here as well for simplicity. some complex objects will and have to register them earlier on because of
-        // circular references, but for most cases registering will happen here.
-        REFERENCE_RESOLVER.add(referenceId, object);
-        return object;
+        return REFERENCE_RESOLVER.addForDeserialize(((Serializer<T>) config.getSerializer(this.readShort())).read(this));
     }
 
     public short readShort() {
@@ -108,7 +101,4 @@ public final class Input {
         return CHARSET_DECODER.get().reset();
     }
 
-    public int createReferenceId() {
-        return this.byteBuffer.position();
-    }
 }

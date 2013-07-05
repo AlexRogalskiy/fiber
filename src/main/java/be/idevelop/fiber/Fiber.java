@@ -46,7 +46,7 @@ public final class Fiber {
             output.write(o);
             return output.getByteBuffer();
         } finally {
-            REFERENCE_RESOLVER.clear();
+            REFERENCE_RESOLVER.clearSerialize();
         }
     }
 
@@ -55,17 +55,29 @@ public final class Fiber {
         return new ByteBufferInputStream(buffer);
     }
 
+    public byte[] serializeToBytes(Object o) {
+        ByteBuffer byteBuffer = serialize(o);
+        byte[] bytes = new byte[byteBuffer.remaining()];
+        byteBuffer.get(bytes, 0, bytes.length);
+        return bytes;
+    }
+
     public <T> T deserialize(ByteBuffer byteBuffer) {
         try {
-            Input input = new Input(config, byteBuffer);
-            return input.read();
+            return new Input(config, byteBuffer).read();
         } finally {
-            REFERENCE_RESOLVER.clear();
+            byteBuffer.reset();
+            REFERENCE_RESOLVER.clearDeserialize();
         }
     }
 
     public <T> T deserializeFromStream(InputStream stream) {
         ByteBuffer byteBuffer = createByteBufferFromInputStream(stream);
+        return deserialize(byteBuffer);
+    }
+
+    public <T> T deserializeFromBytes(byte[] bytes) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         return deserialize(byteBuffer);
     }
 
@@ -83,7 +95,7 @@ public final class Fiber {
         } catch (IOException e) {
             throw new IllegalStateException("Could not read input stream into byte buffer", e);
         }
-        return (ByteBuffer) byteBuffer.flip();
+        return (ByteBuffer) byteBuffer.flip().mark();
     }
 
     public void register(Class clazz) {
