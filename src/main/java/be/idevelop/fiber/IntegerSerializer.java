@@ -39,4 +39,9 @@ final class IntegerSerializer extends Serializer<Integer> {
     public void write(Integer i, Output output) {
         output.writeInt(i);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

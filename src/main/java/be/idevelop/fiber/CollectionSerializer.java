@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
+import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public class CollectionSerializer<C extends Collection> extends Serializer<C> implements GenericObjectSerializer {
 
@@ -39,7 +40,7 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> im
     @SuppressWarnings("unchecked")
     @Override
     public C read(Input input) {
-        int length = input.readInteger();
+        short length = input.readShort();
         C collection = createNewInstance();
         if (length > 0) {
             List<Object> tempList = new ArrayList<Object>(length);
@@ -57,9 +58,18 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> im
 
     @Override
     public void write(C collection, Output output) {
-        output.writeInt(collection.size());
+        if (collection.size() > Short.MAX_VALUE) {
+            throw new IllegalArgumentException("Max allowed size for a collection is " + Short.MAX_VALUE + " elements.");
+        }
+        REFERENCE_RESOLVER.addForSerialize(collection, getId(), isImmutable());
+        output.writeShort((short) collection.size());
         for (Object o : collection) {
             output.write(o);
         }
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return false;
     }
 }

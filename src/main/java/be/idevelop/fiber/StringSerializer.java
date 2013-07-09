@@ -32,13 +32,21 @@ final class StringSerializer extends Serializer<String> {
 
     @Override
     public String read(Input input) {
-        int length = input.readInteger();
+        short length = input.readShort();
         return input.readString(length);
     }
 
     @Override
     public void write(String s, Output output) {
-        output.writeInt(s.length());
+        if (s.length() > Short.MAX_VALUE) {
+            throw new IllegalArgumentException("Max allowed size for a string is " + Short.MAX_VALUE + " characters.");
+        }
+        output.writeShort((short) s.length());
         output.writeString(s);
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
     }
 }

@@ -25,10 +25,6 @@
 package be.idevelop.fiber;
 
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
@@ -38,9 +34,11 @@ public final class Output {
 
     private final SerializerConfig config;
 
-    private static final ThreadLocal<CharsetEncoder> CHARSET_ENCODER = new ThreadLocal<CharsetEncoder>();
+    private final ByteBuffer byteBuffer;
 
-    private ByteBuffer byteBuffer;
+    private final short stringId;
+
+    private final IntType classIntType;
 
     Output(SerializerConfig config) {
         this(config, DEFAULT_SIZE);
@@ -49,17 +47,23 @@ public final class Output {
     public Output(SerializerConfig config, int bufferSize) {
         this.config = config;
         this.byteBuffer = config.getByteBufferPool().allocate(bufferSize);
+        this.stringId = config.getClassId(String.class);
+        this.classIntType = config.getIntTypeForClassId();
     }
 
     public ByteBuffer getByteBuffer() {
-        return (ByteBuffer) byteBuffer.reset();
+        return (ByteBuffer) byteBuffer.limit(byteBuffer.position()).reset();
     }
 
+    @SuppressWarnings("unchecked")
     public void write(Object o) {
-        Serializer<? super Object> serializer = this.config.getSerializer(o);
-        this.writeShort(serializer.getId());
-        REFERENCE_RESOLVER.addForSerialize(o);
-        serializer.write(o, this);
+        int position = this.byteBuffer.position();
+        config.getReferenceSerializer().write(o, this);
+        if (position == this.byteBuffer.position()) {
+            Serializer<? super Object> serializer = this.config.getSerializer(o);
+            this.writeClassId(serializer.getId());
+            serializer.write(o, this);
+        }
     }
 
     public void writeShort(Short s) {
@@ -94,25 +98,29 @@ public final class Output {
         this.byteBuffer.putChar(c);
     }
 
+    public void writeBoolean(Boolean b) {
+        writeByte((byte) (b ? 1 : 0));
+    }
+
     public void writeClass(Class clazz) {
-        this.writeShort(this.config.getClassId(clazz));
+        writeClassId(this.config.getClassId(clazz));
+    }
+
+    void writeClassId(short classId) {
+        switch (classIntType) {
+            case BYTE:
+                this.writeByte((byte) classId);
+                break;
+            default:
+                this.writeShort(classId);
+                break;
+        }
     }
 
     public void writeString(String s) {
-        CharsetEncoder encoder = getEncoder();
-        CharBuffer charBuffer = CharBuffer.wrap(s);
-        try {
-            this.byteBuffer.put(encoder.encode(charBuffer));
-        } catch (CharacterCodingException e) {
-            throw new IllegalStateException("Could not serialize String '" + s + "' with UTF-8 encoding.");
-        }
-    }
-
-    private CharsetEncoder getEncoder() {
-        if (CHARSET_ENCODER.get() == null) {
-            CHARSET_ENCODER.set(Charset.forName("UTF-8").newEncoder());
-        }
-        return CHARSET_ENCODER.get().reset();
+        REFERENCE_RESOLVER.addForSerialize(s, stringId, true);
+        this.byteBuffer.asCharBuffer().put(s);
+        this.byteBuffer.position(this.byteBuffer.position() + 2 * s.length());
     }
 
 }

@@ -25,28 +25,26 @@
 package be.idevelop.fiber;
 
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class Input {
 
-    private static final ThreadLocal<CharsetDecoder> CHARSET_DECODER = new ThreadLocal<CharsetDecoder>();
-
     private final SerializerConfig config;
 
     private final ByteBuffer byteBuffer;
 
+    private final IntType classIntType;
+
     Input(SerializerConfig config, ByteBuffer byteBuffer) {
         this.config = config;
         this.byteBuffer = (ByteBuffer) byteBuffer.mark();
+        this.classIntType = config.getIntTypeForClassId();
     }
 
     @SuppressWarnings("unchecked")
     public <T> T read() {
-        return REFERENCE_RESOLVER.addForDeserialize(((Serializer<T>) config.getSerializer(this.readShort())).read(this));
+        return ((Serializer<T>) config.getSerializer(readClassId())).read(this);
     }
 
     public short readShort() {
@@ -83,22 +81,30 @@ public final class Input {
         return byteBuffer.getLong();
     }
 
+    public boolean readBoolean() {
+        return (readByte() == 1);
+    }
+
     public Class readClass() {
-        return config.getClassForId(byteBuffer.getShort());
+        return config.getClassForId(readClassId());
+    }
+
+    private short readClassId() {
+        switch (classIntType) {
+            case BYTE:
+                return byteBuffer.get();
+            default:
+                return byteBuffer.getShort();
+        }
     }
 
     public String readString(int length) {
-        CharsetDecoder decoder = getDecoder();
-        CharBuffer buffer = CharBuffer.allocate(length);
-        decoder.decode(this.byteBuffer, buffer, false);
-        return buffer.rewind().toString();
-    }
-
-    private CharsetDecoder getDecoder() {
-        if (CHARSET_DECODER.get() == null) {
-            CHARSET_DECODER.set(Charset.forName("UTF-8").newDecoder());
-        }
-        return CHARSET_DECODER.get().reset();
+        char[] chars = new char[length];
+        this.byteBuffer.asCharBuffer().subSequence(0, length).get(chars);
+        this.byteBuffer.position(this.byteBuffer.position() + 2 * length);
+        String s = new String(chars);
+        REFERENCE_RESOLVER.addForDeserialize(s);
+        return s;
     }
 
 }

@@ -39,4 +39,9 @@ final class DoubleSerializer extends Serializer<Double> {
     public void write(Double d, Output output) {
         output.writeDouble(d);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

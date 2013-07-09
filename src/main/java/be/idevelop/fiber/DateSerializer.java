@@ -41,4 +41,9 @@ final class DateSerializer extends Serializer<Date> {
     public void write(Date date, Output output) {
         output.writeLong(date.getTime());
     }
+
+    @Override
+    public boolean isImmutable() {
+        return false;
+    }
 }

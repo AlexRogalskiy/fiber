@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FiberTest {
 
@@ -97,6 +98,12 @@ public class FiberTest {
     }
 
     @Test
+    public void testSerializeOfString() {
+        String s = "some text!@#´þ¯-…˚˝˘˜˛ˇ.´éơç";
+        testSerialization(s);
+    }
+
+    @Test
     public void testSerializerPrimitiveWrapperClasses() {
         Object[] objects = new Object[]{10, false, (byte) 91, '@', 0.2f, 0.3d, (short) 1, 12L};
 
@@ -154,6 +161,7 @@ public class FiberTest {
         fiber.register(ComplexClassWithDefaultConstructorAndReferences.class);
 
         byte[] bytes = fiber.serializeToBytes(complexClass);
+        assertTrue(bytes.length != 8192);
         Object result = fiber.deserializeFromBytes(bytes);
         assertEquals(complexClass, result);
     }

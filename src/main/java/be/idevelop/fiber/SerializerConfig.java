@@ -35,7 +35,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class SerializerConfig {
 
@@ -56,7 +55,7 @@ public final class SerializerConfig {
 
     private static final Serializer ARRAY_SERIALIZER = new ArraySerializer();
 
-    private static final Serializer REFERENCE_SERIALIZER = new ReferenceSerializer();
+    private final Serializer referenceSerializer = new ReferenceSerializer(this);
 
     private short nextId = -1;
 
@@ -85,7 +84,7 @@ public final class SerializerConfig {
     private void registerSpecialClassesAndSerializers() {
         register(Object.class);
         registerSpecialSerializer(NULL_SERIALIZER);
-        registerSpecialSerializer(REFERENCE_SERIALIZER);
+        registerSpecialSerializer(referenceSerializer);
         registerSpecialSerializer(ARRAY_SERIALIZER);
         register(new ClassSerializer());
     }
@@ -175,8 +174,6 @@ public final class SerializerConfig {
     public <T> Serializer<? super T> getSerializer(T o) {
         if (o == null) {
             return NULL_SERIALIZER;
-        } else if (REFERENCE_RESOLVER.contains(o)) {
-            return REFERENCE_SERIALIZER;
         } else {
             return getSerializerForClass((Class<T>) o.getClass());
         }
@@ -201,10 +198,8 @@ public final class SerializerConfig {
     short getClassId(Class clazz) {
         if (clazz.isPrimitive()) {
             return this.serializerClassMap.get(PRIMITIVE_WRAPPER_MAP.get(clazz)).getId();
-        } else if (this.serializerClassMap.containsKey(clazz)) {
-            return this.serializerClassMap.get(clazz).getId();
         } else {
-            throw new IllegalStateException("Class " + clazz.getName() + " should be registered.");
+            return getSerializerForClass(clazz).getId();
         }
     }
 
@@ -214,6 +209,14 @@ public final class SerializerConfig {
 
     public ByteBufferPool getByteBufferPool() {
         return byteBufferPool;
+    }
+
+    Serializer getReferenceSerializer() {
+        return referenceSerializer;
+    }
+
+    IntType getIntTypeForClassId() {
+        return nextId <= Byte.MAX_VALUE ? IntType.BYTE : IntType.SHORT;
     }
 
     private static final class NullSerializer extends Serializer {
@@ -230,6 +233,11 @@ public final class SerializerConfig {
 
         @Override
         public void write(Object object, Output output) {
+        }
+
+        @Override
+        public boolean isImmutable() {
+            return true;
         }
     }
 }

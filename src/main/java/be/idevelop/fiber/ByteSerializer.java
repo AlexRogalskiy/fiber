@@ -39,4 +39,9 @@ final class ByteSerializer extends Serializer<Byte> {
     public void write(Byte b, Output output) {
         output.writeByte(b);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

@@ -39,4 +39,9 @@ final class ClassSerializer extends Serializer<Class> {
     public void write(Class clazz, Output output) {
         output.writeClass(clazz);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

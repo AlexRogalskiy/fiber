@@ -51,4 +51,6 @@ public abstract class Serializer<T> {
     public abstract T read(Input input);
 
     public abstract void write(T object, Output output);
+
+    public abstract boolean isImmutable();
 }

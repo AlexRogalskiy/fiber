@@ -39,4 +39,9 @@ final class ShortSerializer extends Serializer<Short> {
     public void write(Short s, Output output) {
         output.writeShort(s);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

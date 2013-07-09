@@ -28,18 +28,43 @@ public final class EnumSerializer<E extends Enum> extends Serializer<E> {
 
     private final E[] constants;
 
+    private final IntType enumIntType;
+
     public EnumSerializer(Class<E> serializedClass) {
         super(serializedClass);
         this.constants = serializedClass.getEnumConstants();
+        if (this.constants.length < Byte.MAX_VALUE) {
+            this.enumIntType = IntType.BYTE;
+        } else if (this.constants.length < Short.MAX_VALUE) {
+            this.enumIntType = IntType.SHORT;
+        } else {
+            throw new IllegalArgumentException("Max allowed enum constants is " + Short.MAX_VALUE + ".");
+        }
     }
 
     @Override
     public E read(Input input) {
-        return constants[input.readInteger()];
+        switch (enumIntType) {
+            case BYTE:
+                return constants[input.readByte()];
+            default:
+                return constants[input.readShort()];
+        }
     }
 
     @Override
     public void write(E object, Output output) {
-        output.writeInt(object.ordinal());
+        switch (enumIntType) {
+            case BYTE:
+                output.writeByte((byte) object.ordinal());
+                break;
+            default:
+                output.writeShort((short) object.ordinal());
+        }
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
     }
 }

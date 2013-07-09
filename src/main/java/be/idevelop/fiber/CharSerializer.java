@@ -39,4 +39,9 @@ final class CharSerializer extends Serializer<Character> {
     public void write(Character c, Output output) {
         output.writeChar(c);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

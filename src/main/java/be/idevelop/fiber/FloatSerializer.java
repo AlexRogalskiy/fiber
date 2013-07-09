@@ -39,4 +39,9 @@ final class FloatSerializer extends Serializer<Float> {
     public void write(Float f, Output output) {
         output.writeFloat(f);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

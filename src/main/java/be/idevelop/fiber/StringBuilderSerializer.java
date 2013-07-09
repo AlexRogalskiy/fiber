@@ -24,6 +24,8 @@
 
 package be.idevelop.fiber;
 
+import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
+
 class StringBuilderSerializer extends Serializer<StringBuilder> {
 
     protected StringBuilderSerializer() {
@@ -32,13 +34,21 @@ class StringBuilderSerializer extends Serializer<StringBuilder> {
 
     @Override
     public StringBuilder read(Input input) {
-        return new StringBuilder(input.readString(input.readInteger()));
+        StringBuilder builder = new StringBuilder(input.readString(input.readInteger()));
+        REFERENCE_RESOLVER.addForDeserialize(builder);
+        return builder;
     }
 
     @Override
     public void write(StringBuilder stringBuilder, Output output) {
+        REFERENCE_RESOLVER.addForSerialize(stringBuilder, getId(), isImmutable());
         String s = stringBuilder.toString();
         output.writeInt(s.length());
         output.writeString(s);
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return false;
     }
 }

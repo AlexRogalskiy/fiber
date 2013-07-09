@@ -26,6 +26,8 @@ package be.idevelop.fiber;
 
 import java.util.Currency;
 
+import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
+
 final class CurrencySerializer extends Serializer<Currency> {
 
     CurrencySerializer() {
@@ -35,12 +37,20 @@ final class CurrencySerializer extends Serializer<Currency> {
     @Override
     public Currency read(Input input) {
         int length = input.readShort();
-        return Currency.getInstance(input.readString(length));
+        Currency currency = Currency.getInstance(input.readString(length));
+        REFERENCE_RESOLVER.addForDeserialize(currency);
+        return currency;
     }
 
     @Override
     public void write(Currency currency, Output output) {
+        REFERENCE_RESOLVER.addForSerialize(currency, getId(), isImmutable());
         output.writeShort((short) currency.getCurrencyCode().length());
         output.writeString(currency.getCurrencyCode());
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
     }
 }

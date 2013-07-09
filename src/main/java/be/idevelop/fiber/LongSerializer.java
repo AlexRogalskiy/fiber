@@ -39,4 +39,9 @@ final class LongSerializer extends Serializer<Long> {
     public void write(Long l, Output output) {
         output.writeLong(l);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
 }

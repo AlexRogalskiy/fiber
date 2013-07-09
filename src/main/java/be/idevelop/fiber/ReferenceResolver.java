@@ -24,10 +24,13 @@
 
 package be.idevelop.fiber;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 enum ReferenceResolver {
 
@@ -37,13 +40,15 @@ enum ReferenceResolver {
 
     private static final ThreadLocal<DeserializeReferenceContainer> DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL = new InheritableThreadLocal<DeserializeReferenceContainer>();
 
+    private static final int MAX_OBJECT_INSTANCES = 8 * 1024;
+
     static {
         SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new SerializeReferenceContainer());
         DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new DeserializeReferenceContainer());
     }
 
-    void addForSerialize(Object o) {
-        getSerializeReferenceContainer().add(o);
+    void addForSerialize(Object o, short classId, boolean immutable) {
+        getSerializeReferenceContainer().add(o, classId, immutable);
     }
 
     <T> T addForDeserialize(T o) {
@@ -62,12 +67,8 @@ enum ReferenceResolver {
         getDeserializeReferenceContainer().clear();
     }
 
-    boolean contains(Object o) {
-        return getSerializeReferenceContainer().contains(o);
-    }
-
-    int getReferenceId(Object o) {
-        return getSerializeReferenceContainer().getId(o);
+    short getReferenceId(Object o, short classId, boolean immutable) {
+        return getSerializeReferenceContainer().getId(o, classId, immutable);
     }
 
     private SerializeReferenceContainer getSerializeReferenceContainer() {
@@ -80,40 +81,63 @@ enum ReferenceResolver {
 
     private static class SerializeReferenceContainer {
 
-        private int referenceId = 0;
+        private short referenceId = 0;
 
-        private Set<Integer> objectIds = new HashSet<Integer>();
+        private Set<Short> classIds = new HashSet<Short>();
 
-        private Map<Integer, Integer> objectIdToReferenceId = new HashMap<Integer, Integer>();
+        @SuppressWarnings("unchecked")
+        private List<Object>[] objects = new List[MAX_OBJECT_INSTANCES];
+
+        private Map<Integer, Short> objectIdToReferenceId = new TreeMap<Integer, Short>();
+
+        @SuppressWarnings("unchecked")
+        private Map<Object, Short>[] immutableObjects = new Map[MAX_OBJECT_INSTANCES];
 
         void clear() {
             referenceId = 0;
-            objectIds.clear();
+            for (Short classId : classIds) {
+                objects[classId] = null;
+                immutableObjects[classId] = null;
+            }
+            classIds.clear();
             objectIdToReferenceId.clear();
         }
 
-        void add(Object o) {
+        void add(Object o, short classId, boolean immutable) {
             if (o != null) {
-                int objectId = System.identityHashCode(o);
-                if (!objectIds.contains(objectId)) {
-                    objectIds.add(objectId);
-                    objectIdToReferenceId.put(objectId, referenceId++);
+                if (objects[classId] == null) {
+                    objects[classId] = new ArrayList<Object>();
+                    classIds.add(classId);
                 }
+                objects[classId].add(o);
+                objectIdToReferenceId.put(System.identityHashCode(o), referenceId);
+                if (immutable) {
+                    if (immutableObjects[classId] == null) {
+                        immutableObjects[classId] = new HashMap<Object, Short>();
+                    }
+                    immutableObjects[classId].put(o, referenceId);
+                }
+                referenceId++;
             }
         }
 
-        boolean contains(Object o) {
-            return o != null && objectIds.contains(System.identityHashCode(o));
+        short getId(Object o, short classId, boolean immutable) {
+            Short id = null;
+            if (!immutable) {
+                id = objectIdToReferenceId.get(System.identityHashCode(o));
+            } else {
+                if (immutableObjects[classId] == null) {
+                    immutableObjects[classId] = new HashMap<Object, Short>();
+                } else {
+                    id = immutableObjects[classId].get(o);
+                }
+            }
+            return id != null ? id : -1;
         }
 
-        int getId(Object o) {
-            return objectIdToReferenceId.get(System.identityHashCode(o));
-        }
     }
 
     private static class DeserializeReferenceContainer {
-
-        private static final int MAX_OBJECT_INSTANCES = 8 * 1024;
 
         private int referenceId = 0;
 
@@ -133,6 +157,7 @@ enum ReferenceResolver {
         void clear() {
             referenceId = 0;
         }
+
     }
 
 }

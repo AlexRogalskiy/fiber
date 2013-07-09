@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
+import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> implements GenericObjectSerializer {
 
@@ -38,7 +39,7 @@ public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> 
     @SuppressWarnings("unchecked")
     @Override
     public M read(Input input) {
-        int length = input.readInteger();
+        int length = input.readShort();
         M map = OBJECT_CREATOR.createNewInstance(getId());
         if (length > 0) {
             Map<Object, Object> tempMap = new HashMap<Object, Object>(length);
@@ -52,10 +53,19 @@ public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> 
 
     @Override
     public void write(M map, Output output) {
-        output.writeInt(map.size());
+        if (map.size() > Short.MAX_VALUE) {
+            throw new IllegalArgumentException("Max allowed size for a collection is " + Short.MAX_VALUE + " elements.");
+        }
+        REFERENCE_RESOLVER.addForSerialize(map, getId(), isImmutable());
+        output.writeShort((short) map.size());
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             output.write(entry.getKey());
             output.write(entry.getValue());
         }
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return false;
     }
 }

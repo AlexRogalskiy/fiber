@@ -28,17 +28,32 @@ import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 class ReferenceSerializer extends Serializer<Object> {
 
-    ReferenceSerializer() {
+    private final SerializerConfig config;
+
+    ReferenceSerializer(SerializerConfig config) {
         super(Object.class);
+        this.config = config;
     }
 
     @Override
     public Object read(Input input) {
-        return REFERENCE_RESOLVER.getReference(input.readInteger());
+        return REFERENCE_RESOLVER.getReference(input.readShort());
     }
 
     @Override
     public void write(Object object, Output output) {
-        output.writeInt(REFERENCE_RESOLVER.getReferenceId(object));
+        if (object != null) {
+            Serializer<?> serializer = config.getSerializerForClass(object.getClass());
+            short referenceId = REFERENCE_RESOLVER.getReferenceId(object, serializer.getId(), serializer.isImmutable());
+            if (referenceId >= 0) {
+                output.writeClassId(getId());
+                output.writeShort(referenceId);
+            }
+        }
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
     }
 }

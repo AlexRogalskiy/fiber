@@ -32,6 +32,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
+import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class ObjectSerializer<T> extends Serializer<T> implements GenericObjectSerializer {
 
@@ -69,7 +70,13 @@ public final class ObjectSerializer<T> extends Serializer<T> implements GenericO
     }
 
     @Override
+    public boolean isImmutable() {
+        return false;
+    }
+
+    @Override
     public final void write(Object object, Output output) {
+        REFERENCE_RESOLVER.addForSerialize(object, getId(), isImmutable());
         for (Field field : fields) {
             try {
                 output.write(field.get(object));

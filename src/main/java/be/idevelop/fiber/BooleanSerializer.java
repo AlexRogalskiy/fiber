@@ -32,11 +32,17 @@ final class BooleanSerializer extends Serializer<Boolean> {
 
     @Override
     public Boolean read(Input input) {
-        return (input.readByte() == 1);
+        return input.readBoolean();
     }
 
     @Override
     public void write(Boolean b, Output output) {
-        output.writeByte((byte) (b ? 1 : 0));
+        output.writeBoolean(b);
     }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
+    }
+
 }

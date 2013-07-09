@@ -27,6 +27,8 @@ package be.idevelop.fiber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
+
 final class BigDecimalSerializer extends Serializer<BigDecimal> {
 
     BigDecimalSerializer() {
@@ -35,12 +37,20 @@ final class BigDecimalSerializer extends Serializer<BigDecimal> {
 
     @Override
     public BigDecimal read(Input input) {
-        return new BigDecimal(input.<BigInteger>read(), input.<Integer>read());
+        BigDecimal bigDecimal = new BigDecimal(input.<BigInteger>read(), input.<Integer>read());
+        REFERENCE_RESOLVER.addForDeserialize(bigDecimal);
+        return bigDecimal;
     }
 
     @Override
     public void write(BigDecimal bigDecimal, Output output) {
+        REFERENCE_RESOLVER.addForSerialize(bigDecimal, getId(), isImmutable());
         output.write(bigDecimal.unscaledValue());
         output.write(bigDecimal.scale());
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return true;
     }
 }
