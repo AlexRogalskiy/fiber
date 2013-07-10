@@ -40,73 +40,109 @@ final class ArraySerializer extends Serializer<Object> {
         Class arrayElementType = input.read();
         if (arrayElementType.isPrimitive()) {
             if (int.class.equals(arrayElementType)) {
-                int[] array = new int[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readInteger();
-                }
-                return array;
+                return readIntArray(input, length);
             } else if (long.class.equals(arrayElementType)) {
-                long[] array = new long[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readLong();
-                }
-                return array;
+                return readLongArray(input, length);
             } else if (boolean.class.equals(arrayElementType)) {
-                boolean[] array = new boolean[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readBoolean();
-                }
-                return array;
+                return readBooleanArray(input, length);
             } else if (double.class.equals(arrayElementType)) {
-                double[] array = new double[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readDouble();
-                }
-                return array;
+                return readDoubleArray(input, length);
             } else if (float.class.equals(arrayElementType)) {
-                float[] array = new float[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readFloat();
-                }
-                return array;
+                return readFloatArray(input, length);
             } else if (byte.class.equals(arrayElementType)) {
-                byte[] array = new byte[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readByte();
-                }
-                return array;
+                return readByteArray(input, length);
             } else if (short.class.equals(arrayElementType)) {
-                short[] array = new short[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readShort();
-                }
-                return array;
+                return readShortArray(input, length);
             } else if (char.class.equals(arrayElementType)) {
-                char[] array = new char[length];
-                REFERENCE_RESOLVER.addForDeserialize(array);
-                for (int i = 0; i < length; i++) {
-                    array[i] = input.readChar();
-                }
-                return array;
+                return readCharArray(input, length);
             }
         }
-        Object[] array = createArray(length, arrayElementType);
+        return readObjectArray(input, length, arrayElementType);
+    }
+
+    private Object readIntArray(Input input, int length) {
+        int[] array = new int[length];
         REFERENCE_RESOLVER.addForDeserialize(array);
         for (int i = 0; i < length; i++) {
-            array[i] = input.read();
+            array[i] = input.readInteger();
+        }
+        return array;
+    }
+
+    private Object readLongArray(Input input, int length) {
+        long[] array = new long[length];
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.readLong();
+        }
+        return array;
+    }
+
+    private Object readBooleanArray(Input input, int length) {
+        boolean[] array = new boolean[length];
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.readBoolean();
+        }
+        return array;
+    }
+
+    private Object readDoubleArray(Input input, int length) {
+        double[] array = new double[length];
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.readDouble();
+        }
+        return array;
+    }
+
+    private Object readFloatArray(Input input, int length) {
+        float[] array = new float[length];
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.readFloat();
+        }
+        return array;
+    }
+
+    private Object readByteArray(Input input, int length) {
+        byte[] array = new byte[length];
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.readByte();
+        }
+        return array;
+    }
+
+    private Object readShortArray(Input input, int length) {
+        short[] array = new short[length];
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.readShort();
+        }
+        return array;
+    }
+
+    private Object readCharArray(Input input, int length) {
+        char[] array = new char[length];
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.readChar();
         }
         return array;
     }
 
     private <T> T[] createArray(int length, Class<T> arrayElementType) {
         return (T[]) Array.newInstance(arrayElementType, length);
+    }
+
+    private Object readObjectArray(Input input, int length, Class arrayElementType) {
+        Object[] array = createArray(length, arrayElementType);
+        REFERENCE_RESOLVER.addForDeserialize(array);
+        for (int i = 0; i < length; i++) {
+            array[i] = input.read();
+        }
+        return array;
     }
 
     @Override
@@ -119,51 +155,83 @@ final class ArraySerializer extends Serializer<Object> {
         output.write(arrayElementType);
         if (arrayElementType.isPrimitive()) {
             if (int.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeInt(Array.getInt(array, i));
-                }
+                writeIntArray(array, output, length);
             } else if (long.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeLong(Array.getLong(array, i));
-                }
+                writeLongArray(array, output, length);
             } else if (boolean.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeBoolean(Array.getBoolean(array, i));
-                }
+                writeBooleanArray(array, output, length);
             } else if (double.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeDouble(Array.getDouble(array, i));
-                }
+                writeDoubleArray(array, output, length);
             } else if (float.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeFloat(Array.getFloat(array, i));
-                }
+                writeFloatArray(array, output, length);
             } else if (byte.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeByte(Array.getByte(array, i));
-                }
+                writeByteArray(array, output, length);
             } else if (short.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeShort(Array.getShort(array, i));
-                }
+                writeShortArray(array, output, length);
             } else if (char.class.equals(arrayElementType)) {
-                for (int i = 0; i < length; i++) {
-                    output.writeChar(Array.getChar(array, i));
-                }
+                writeCharArray(array, output, length);
             }
         } else {
-            writeArrayFields((Object[]) array, output);
+            writeObjectArray((Object[]) array, output);
+        }
+    }
+
+    private void writeIntArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeInt(Array.getInt(array, i));
+        }
+    }
+
+    private void writeLongArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeLong(Array.getLong(array, i));
+        }
+    }
+
+    private void writeBooleanArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeBoolean(Array.getBoolean(array, i));
+        }
+    }
+
+    private void writeDoubleArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeDouble(Array.getDouble(array, i));
+        }
+    }
+
+    private void writeFloatArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeFloat(Array.getFloat(array, i));
+        }
+    }
+
+    private void writeByteArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeByte(Array.getByte(array, i));
+        }
+    }
+
+    private void writeShortArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeShort(Array.getShort(array, i));
+        }
+    }
+
+    private void writeCharArray(Object array, Output output, short length) {
+        for (int i = 0; i < length; i++) {
+            output.writeChar(Array.getChar(array, i));
+        }
+    }
+
+    private <T> void writeObjectArray(T[] array, Output output) {
+        for (Object obj : array) {
+            output.write(obj);
         }
     }
 
     @Override
     public boolean isImmutable() {
         return false;
-    }
-
-    private <T> void writeArrayFields(T[] array, Output output) {
-        for (Object obj : array) {
-            output.write(obj);
-        }
     }
 }
