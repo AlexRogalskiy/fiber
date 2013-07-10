@@ -99,7 +99,7 @@ public class FiberTest {
 
     @Test
     public void testSerializeOfString() {
-        String s = "some text!@#´þ¯-…˚˝˘˜˛ˇ.´éơç";
+        String s = "some text!@#\u00b4\u00fe\u00af-\u2026\u02da\u02dd\u02d8\u02dc\u02db\u02c7.\u00b4\u00e9\u01a1\u00e7";
         testSerialization(s);
     }
 
