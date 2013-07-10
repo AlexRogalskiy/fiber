@@ -28,7 +28,7 @@
 
     <groupId>be.idevelop</groupId>
     <artifactId>fiber</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
 
     <name>Fiber</name>
     <description>A Java serialization engine</description>
@@ -52,7 +52,7 @@
         <connection>scm:git:git@github.com:willemsst/fiber.git</connection>
         <url>scm:git:git@github.com:willemsst/fiber.git</url>
         <developerConnection>scm:git:git@github.com:willemsst/fiber.git</developerConnection>
-      <tag>fiber-0.2</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <dependencies>
