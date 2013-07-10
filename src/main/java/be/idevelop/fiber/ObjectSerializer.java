@@ -61,7 +61,7 @@ public final class ObjectSerializer<T> extends Serializer<T> implements GenericO
 
     @SuppressWarnings("unchecked")
     @Override
-    public final T read(Input input) {
+    public T read(Input input) {
         T t = OBJECT_CREATOR.createNewInstance(getId());
         for (Field field : fields) {
             readField(input, t, field);
@@ -75,7 +75,7 @@ public final class ObjectSerializer<T> extends Serializer<T> implements GenericO
     }
 
     @Override
-    public final void write(Object object, Output output) {
+    public void write(Object object, Output output) {
         REFERENCE_RESOLVER.addForSerialize(object, getId(), isImmutable());
         for (Field field : fields) {
             try {
