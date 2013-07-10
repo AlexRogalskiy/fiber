@@ -30,7 +30,7 @@ class ByteBufferPool {
 
     private final ByteBuffer byteBuffer;
 
-    int start;
+    private int start;
 
     ByteBufferPool() {
         this(1024 * 1024 * 64);
