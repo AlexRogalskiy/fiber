@@ -2,8 +2,8 @@ Fiber
 =====
 A java serialization engine. Fast, compact &amp; thread safe serialization.
 
-Started this project out of frustration Kryo is not thread safe. For a comparison on speed and size, see "performance".
-Version 3.0 is already pretty fast and compact.
+Started this project out of frustration Kryo is not thread safe. For a comparison on speed and size, see «[performance](#performance)».
+Version 0.3 is already pretty fast and compact.
 
 If you want to use this library, keep the following in mind:
 * Java 1.6 or newer
@@ -15,7 +15,7 @@ If you want to use this library, keep the following in mind:
 Performance
 ===========
 
-Perfomance was measured with modified version of [jvm-serializers](https://github.com/eishay/jvm-serializers/wiki).
+Perfomance was measured with a modified version of [jvm-serializers](https://github.com/eishay/jvm-serializers/wiki).
 
 ```console
 ./run -chart -trials=500 -include=`cat fiber.txt | tr "\\n" ","`  data/media.1.cks
