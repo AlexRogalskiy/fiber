@@ -28,12 +28,14 @@ import java.nio.ByteBuffer;
 
 class ByteBufferPool {
 
+    private static final int DEFAULT_BUFFER_POOL_SIZE = 1024 * 1024 * 64;
+
     private final ByteBuffer byteBuffer;
 
     private int start;
 
     ByteBufferPool() {
-        this(1024 * 1024 * 64);
+        this(DEFAULT_BUFFER_POOL_SIZE);
     }
 
     ByteBufferPool(int sizeInBytes) {
