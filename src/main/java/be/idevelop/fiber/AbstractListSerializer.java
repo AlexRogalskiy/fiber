@@ -37,8 +37,8 @@ final class AbstractListSerializer extends CollectionSerializer<AbstractList> {
     }
 
     @Override
-    protected AbstractList<Object> createNewInstance() {
-        ArrayList<Object> list = new ArrayList<Object>();
+    protected AbstractList<Object> createNewInstance(short length) {
+        ArrayList<Object> list = new ArrayList<Object>(length);
         REFERENCE_RESOLVER.addForDeserialize(list);
         return list;
     }

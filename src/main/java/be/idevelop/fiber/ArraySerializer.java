@@ -97,12 +97,16 @@ final class ArraySerializer extends Serializer<Object> {
                 return array;
             }
         }
-        Object array = Array.newInstance(arrayElementType, length);
+        Object[] array = createArray(length, arrayElementType);
         REFERENCE_RESOLVER.addForDeserialize(array);
         for (int i = 0; i < length; i++) {
-            Array.set(array, i, input.read());
+            array[i] = input.read();
         }
         return array;
+    }
+
+    private <T> T[] createArray(int length, Class<T> arrayElementType) {
+        return (T[]) Array.newInstance(arrayElementType, length);
     }
 
     @Override

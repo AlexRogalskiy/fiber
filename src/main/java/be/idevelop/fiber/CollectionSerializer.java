@@ -24,9 +24,7 @@
 
 package be.idevelop.fiber;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
@@ -41,19 +39,17 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> im
     @Override
     public C read(Input input) {
         short length = input.readShort();
-        C collection = createNewInstance();
+        C collection = createNewInstance(length);
         if (length > 0) {
-            List<Object> tempList = new ArrayList<Object>(length);
             for (int i = 0; i < length; i++) {
-                tempList.add(input.read());
+                collection.add(input.read());
             }
-            collection.addAll(tempList);
         }
         return collection;
     }
 
-    protected C createNewInstance() {
-        return OBJECT_CREATOR.createNewInstance(getId());
+    protected C createNewInstance(short length) {
+        return OBJECT_CREATOR.createNewCollectionInstance(getId(), length);
     }
 
     @Override

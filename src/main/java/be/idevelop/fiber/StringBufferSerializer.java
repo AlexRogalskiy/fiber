@@ -34,7 +34,7 @@ final class StringBufferSerializer extends Serializer<StringBuffer> {
 
     @Override
     public StringBuffer read(Input input) {
-        StringBuffer stringBuffer = new StringBuffer(input.readString(input.readInteger()));
+        StringBuffer stringBuffer = new StringBuffer(input.readString());
         REFERENCE_RESOLVER.addForDeserialize(stringBuffer);
         return stringBuffer;
     }
@@ -43,7 +43,6 @@ final class StringBufferSerializer extends Serializer<StringBuffer> {
     public void write(StringBuffer stringBuffer, Output output) {
         REFERENCE_RESOLVER.addForSerialize(stringBuffer, getId(), isImmutable());
         String s = stringBuffer.toString();
-        output.writeInt(s.length());
         output.writeString(s);
     }
 

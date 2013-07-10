@@ -32,6 +32,8 @@ public final class Output {
 
     private static final int DEFAULT_SIZE = 1024 * 8;
 
+    private static final byte ONE_BYTE = (byte) 0x1;
+
     private final SerializerConfig config;
 
     private final ByteBuffer byteBuffer;
@@ -119,8 +121,20 @@ public final class Output {
 
     public void writeString(String s) {
         REFERENCE_RESOLVER.addForSerialize(s, stringId, true);
-        this.byteBuffer.asCharBuffer().put(s);
-        this.byteBuffer.position(this.byteBuffer.position() + 2 * s.length());
+        if (s.length() > Short.MAX_VALUE) {
+            throw new IllegalArgumentException("Max allowed size for a string is " + Short.MAX_VALUE + " characters.");
+        }
+        this.writeShort((short) s.length());
+        short c;
+        for (int i = 0; i < s.length(); i++) {
+            c = (short) s.charAt(i);
+            if (c >> 8 == 0) {
+                this.byteBuffer.put((byte) c);
+            } else {
+                this.byteBuffer.put(ONE_BYTE);
+                this.byteBuffer.putShort(c);
+            }
+        }
     }
 
 }

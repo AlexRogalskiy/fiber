@@ -34,7 +34,7 @@ class StringBuilderSerializer extends Serializer<StringBuilder> {
 
     @Override
     public StringBuilder read(Input input) {
-        StringBuilder builder = new StringBuilder(input.readString(input.readInteger()));
+        StringBuilder builder = new StringBuilder(input.readString());
         REFERENCE_RESOLVER.addForDeserialize(builder);
         return builder;
     }
@@ -43,7 +43,6 @@ class StringBuilderSerializer extends Serializer<StringBuilder> {
     public void write(StringBuilder stringBuilder, Output output) {
         REFERENCE_RESOLVER.addForSerialize(stringBuilder, getId(), isImmutable());
         String s = stringBuilder.toString();
-        output.writeInt(s.length());
         output.writeString(s);
     }
 

@@ -27,6 +27,7 @@ package be.idevelop.fiber;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
@@ -38,13 +39,33 @@ enum ObjectCreator {
 
     public void registerClass(Class clazz, short classId) {
         if (!Modifier.isAbstract(clazz.getModifiers())) {
-            constructors[classId] = getDefaultConstructor(clazz);
+            if (Collection.class.isAssignableFrom(clazz)) {
+                constructors[classId] = getCollectionConstructor(clazz);
+            } else {
+                constructors[classId] = getDefaultConstructor(clazz);
+            }
         }
     }
 
     @SuppressWarnings("unchecked")
     public <T> T createNewInstance(short classId) {
         return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<T>) constructors[classId]));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <C extends Collection> C createNewCollectionInstance(short classId, short length) {
+        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<C>) constructors[classId], length));
+    }
+
+    private <C extends Collection> Constructor<C> getCollectionConstructor(Class<C> clazz) {
+        Constructor<C> constructor;
+        try {
+            constructor = clazz.getDeclaredConstructor(int.class);
+            constructor.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("No collection constructor found for class " + clazz.getName() + ". Implement a custom serializer.", e);
+        }
+        return constructor;
     }
 
     private <T> Constructor<T> getDefaultConstructor(Class<T> clazz) {
@@ -58,10 +79,10 @@ enum ObjectCreator {
         return constructor;
     }
 
-    private <T> T createNewInstance(Constructor<T> constructor) {
+    private <T> T createNewInstance(Constructor<T> constructor, Object... param) {
         T t;
         try {
-            t = constructor.newInstance();
+            t = constructor.newInstance(param);
         } catch (InstantiationException e) {
             throw new IllegalStateException("Could not invoke default constructor for class " + constructor.getDeclaringClass().getName(), e);
         } catch (IllegalAccessException e) {
@@ -71,5 +92,4 @@ enum ObjectCreator {
         }
         return t;
     }
-
 }

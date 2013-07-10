@@ -36,8 +36,7 @@ final class CurrencySerializer extends Serializer<Currency> {
 
     @Override
     public Currency read(Input input) {
-        int length = input.readShort();
-        Currency currency = Currency.getInstance(input.readString(length));
+        Currency currency = Currency.getInstance(input.readString());
         REFERENCE_RESOLVER.addForDeserialize(currency);
         return currency;
     }
@@ -45,7 +44,6 @@ final class CurrencySerializer extends Serializer<Currency> {
     @Override
     public void write(Currency currency, Output output) {
         REFERENCE_RESOLVER.addForSerialize(currency, getId(), isImmutable());
-        output.writeShort((short) currency.getCurrencyCode().length());
         output.writeString(currency.getCurrencyCode());
     }
 

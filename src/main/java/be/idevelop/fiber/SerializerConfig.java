@@ -32,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 
@@ -115,8 +114,8 @@ public final class SerializerConfig {
     private void registerCollectionSerializers() {
         register(new AbstractListSerializer());
         register(new CollectionSerializer(ArrayList.class));
+        register(new TreeSetSerializer());
         register(new CollectionSerializer(HashSet.class));
-        register(new CollectionSerializer(TreeSet.class));
     }
 
     @SuppressWarnings("unchecked")

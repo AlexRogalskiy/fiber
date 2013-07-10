@@ -30,6 +30,8 @@ import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class Input {
 
+    private static final byte ONE_BYTE = (byte) 0x1;
+
     private final SerializerConfig config;
 
     private final ByteBuffer byteBuffer;
@@ -98,13 +100,21 @@ public final class Input {
         }
     }
 
-    public String readString(int length) {
+    public String readString() {
+        short length = readShort();
         char[] chars = new char[length];
-        this.byteBuffer.asCharBuffer().subSequence(0, length).get(chars);
-        this.byteBuffer.position(this.byteBuffer.position() + 2 * length);
+        for (int i = 0; i < length; i++) {
+            byte b = readByte();
+            if (b == ONE_BYTE) {
+                chars[i] = (char) readShort();
+            } else {
+                chars[i] = (char) (b & 0xff);
+            }
+        }
         String s = new String(chars);
         REFERENCE_RESOLVER.addForDeserialize(s);
         return s;
+
     }
 
 }
