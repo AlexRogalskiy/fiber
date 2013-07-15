@@ -26,8 +26,6 @@ package be.idevelop.fiber;
 
 import java.math.BigInteger;
 
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
-
 final class BigIntegerSerializer extends Serializer<BigInteger> {
 
     BigIntegerSerializer() {
@@ -38,13 +36,13 @@ final class BigIntegerSerializer extends Serializer<BigInteger> {
     public BigInteger read(Input input) {
         int length = input.readInteger();
         BigInteger bigInteger = new BigInteger(input.readBytes(length));
-        REFERENCE_RESOLVER.addForDeserialize(bigInteger);
+        addReferenceForDeserialization(bigInteger);
         return bigInteger;
     }
 
     @Override
     public void write(BigInteger bigInteger, Output output) {
-        REFERENCE_RESOLVER.addForSerialize(bigInteger, getId(), isImmutable());
+        addReferenceForSerialization(bigInteger);
         byte[] bytes = bigInteger.toByteArray();
         output.writeInt(bytes.length);
         output.writeBytes(bytes);

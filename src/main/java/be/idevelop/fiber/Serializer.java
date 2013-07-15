@@ -24,6 +24,8 @@
 
 package be.idevelop.fiber;
 
+import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
+
 public abstract class Serializer<T> {
 
     private final Class<T> serializedClass;
@@ -53,4 +55,12 @@ public abstract class Serializer<T> {
     public abstract void write(T object, Output output);
 
     public abstract boolean isImmutable();
+
+    protected final void addReferenceForSerialization(T t) {
+        REFERENCE_RESOLVER.addForSerialize(t, getId(), isImmutable());
+    }
+
+    protected final T addReferenceForDeserialization(T t) {
+        return REFERENCE_RESOLVER.addForDeserialize(t);
+    }
 }

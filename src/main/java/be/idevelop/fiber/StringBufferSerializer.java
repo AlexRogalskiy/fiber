@@ -24,8 +24,6 @@
 
 package be.idevelop.fiber;
 
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
-
 final class StringBufferSerializer extends Serializer<StringBuffer> {
 
     StringBufferSerializer() {
@@ -35,13 +33,13 @@ final class StringBufferSerializer extends Serializer<StringBuffer> {
     @Override
     public StringBuffer read(Input input) {
         StringBuffer stringBuffer = new StringBuffer(input.readString());
-        REFERENCE_RESOLVER.addForDeserialize(stringBuffer);
+        addReferenceForDeserialization(stringBuffer);
         return stringBuffer;
     }
 
     @Override
     public void write(StringBuffer stringBuffer, Output output) {
-        REFERENCE_RESOLVER.addForSerialize(stringBuffer, getId(), isImmutable());
+        addReferenceForSerialization(stringBuffer);
         String s = stringBuffer.toString();
         output.writeString(s);
     }

@@ -26,8 +26,6 @@ package be.idevelop.fiber;
 
 import java.util.Collection;
 
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
-
 public class CollectionSerializer<C extends Collection> extends Serializer<C> implements GenericObjectSerializer {
 
     private ObjectCreator objectCreator;
@@ -58,7 +56,7 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> im
         if (collection.size() > Short.MAX_VALUE) {
             throw new IllegalArgumentException("Max allowed size for a collection is " + Short.MAX_VALUE + " elements.");
         }
-        REFERENCE_RESOLVER.addForSerialize(collection, getId(), isImmutable());
+        addReferenceForSerialization(collection);
         output.writeShort((short) collection.size());
         for (Object o : collection) {
             output.write(o);

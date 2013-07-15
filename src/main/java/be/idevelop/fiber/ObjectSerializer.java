@@ -31,8 +31,6 @@ import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
-
 public final class ObjectSerializer<T> extends Serializer<T> implements GenericObjectSerializer {
 
     private final SortedSet<Field> fields;
@@ -76,13 +74,13 @@ public final class ObjectSerializer<T> extends Serializer<T> implements GenericO
     }
 
     @Override
-    public void write(Object object, Output output) {
-        REFERENCE_RESOLVER.addForSerialize(object, getId(), isImmutable());
+    public void write(T t, Output output) {
+        addReferenceForSerialization(t);
         for (Field field : fields) {
             try {
-                output.write(field.get(object));
+                output.write(field.get(t));
             } catch (IllegalAccessException e) {
-                throw new IllegalStateException("Could not read value from field " + field.getName() + " for object " + object, e);
+                throw new IllegalStateException("Could not read value from field " + field.getName() + " for object " + t, e);
             }
         }
     }

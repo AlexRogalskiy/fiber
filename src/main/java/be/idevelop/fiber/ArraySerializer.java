@@ -26,8 +26,6 @@ package be.idevelop.fiber;
 
 import java.lang.reflect.Array;
 
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
-
 final class ArraySerializer extends Serializer<Object> {
 
     ArraySerializer() {
@@ -62,7 +60,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readIntArray(Input input, int length) {
         int[] array = new int[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readInteger();
         }
@@ -71,7 +69,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readLongArray(Input input, int length) {
         long[] array = new long[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readLong();
         }
@@ -80,7 +78,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readBooleanArray(Input input, int length) {
         boolean[] array = new boolean[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readBoolean();
         }
@@ -89,7 +87,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readDoubleArray(Input input, int length) {
         double[] array = new double[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readDouble();
         }
@@ -98,7 +96,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readFloatArray(Input input, int length) {
         float[] array = new float[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readFloat();
         }
@@ -107,7 +105,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readByteArray(Input input, int length) {
         byte[] array = new byte[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readByte();
         }
@@ -116,7 +114,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readShortArray(Input input, int length) {
         short[] array = new short[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readShort();
         }
@@ -125,7 +123,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readCharArray(Input input, int length) {
         char[] array = new char[length];
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.readChar();
         }
@@ -138,7 +136,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     private Object readObjectArray(Input input, int length, Class arrayElementType) {
         Object[] array = createArray(length, arrayElementType);
-        REFERENCE_RESOLVER.addForDeserialize(array);
+        addReferenceForDeserialization(array);
         for (int i = 0; i < length; i++) {
             array[i] = input.read();
         }
@@ -147,7 +145,7 @@ final class ArraySerializer extends Serializer<Object> {
 
     @Override
     public void write(Object array, Output output) {
-        REFERENCE_RESOLVER.addForSerialize(array, getId(), isImmutable());
+        addReferenceForSerialization(array);
 
         short length = (short) Array.getLength(array);
         output.writeShort(length);

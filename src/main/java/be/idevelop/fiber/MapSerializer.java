@@ -27,8 +27,6 @@ package be.idevelop.fiber;
 import java.util.HashMap;
 import java.util.Map;
 
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
-
 public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> implements GenericObjectSerializer {
 
     private ObjectCreator objectCreator;
@@ -57,7 +55,7 @@ public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> 
         if (map.size() > Short.MAX_VALUE) {
             throw new IllegalArgumentException("Max allowed size for a collection is " + Short.MAX_VALUE + " elements.");
         }
-        REFERENCE_RESOLVER.addForSerialize(map, getId(), isImmutable());
+        addReferenceForSerialization(map);
         output.writeShort((short) map.size());
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             output.write(entry.getKey());

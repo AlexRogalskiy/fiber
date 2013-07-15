@@ -27,8 +27,6 @@ package be.idevelop.fiber;
 import java.util.AbstractList;
 import java.util.ArrayList;
 
-import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
-
 // introduced because Arrays.ArrayList is a private class, so we can't write super(Arrays.ArrayList.class)
 final class AbstractListSerializer extends CollectionSerializer<AbstractList> {
 
@@ -39,7 +37,7 @@ final class AbstractListSerializer extends CollectionSerializer<AbstractList> {
     @Override
     protected AbstractList<Object> createNewInstance(short length) {
         ArrayList<Object> list = new ArrayList<Object>(length);
-        REFERENCE_RESOLVER.addForDeserialize(list);
+        addReferenceForDeserialization(list);
         return list;
     }
 }
