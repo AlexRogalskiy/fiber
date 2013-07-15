@@ -1,5 +1,7 @@
 package be.idevelop.fiber;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -8,6 +10,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class StringSerializerTest {
+
+    @BeforeClass
+    @AfterClass
+    public static void setUpOnce() {
+        System.gc();
+    }
 
     @Test
     public void testSerializeString() {
