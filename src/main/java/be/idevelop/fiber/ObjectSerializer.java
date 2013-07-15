@@ -31,12 +31,13 @@ import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public final class ObjectSerializer<T> extends Serializer<T> implements GenericObjectSerializer {
 
     private final SortedSet<Field> fields;
+
+    private ObjectCreator objectCreator;
 
     public ObjectSerializer(Class<T> clazz, SerializerConfig config) {
         super(clazz);
@@ -62,7 +63,7 @@ public final class ObjectSerializer<T> extends Serializer<T> implements GenericO
     @SuppressWarnings("unchecked")
     @Override
     public T read(Input input) {
-        T t = OBJECT_CREATOR.createNewInstance(getId());
+        T t = objectCreator.createNewInstance(getId());
         for (Field field : fields) {
             readField(input, t, field);
         }
@@ -92,6 +93,11 @@ public final class ObjectSerializer<T> extends Serializer<T> implements GenericO
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("Could not set value for field " + field.getName() + " with value " + input.read() + " for object " + getSerializedClass().getName(), e);
         }
+    }
+
+    @Override
+    public void registerObjectCreator(ObjectCreator objectCreator) {
+        this.objectCreator = objectCreator;
     }
 
     private static class FieldComparator implements Comparator<Field>, Serializable {

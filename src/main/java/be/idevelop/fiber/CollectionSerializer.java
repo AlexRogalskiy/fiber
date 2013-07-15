@@ -26,10 +26,11 @@ package be.idevelop.fiber;
 
 import java.util.Collection;
 
-import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public class CollectionSerializer<C extends Collection> extends Serializer<C> implements GenericObjectSerializer {
+
+    private ObjectCreator objectCreator;
 
     public CollectionSerializer(Class<C> collectionClass) {
         super(collectionClass);
@@ -49,7 +50,7 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> im
     }
 
     protected C createNewInstance(short length) {
-        return OBJECT_CREATOR.createNewCollectionInstance(getId(), length);
+        return objectCreator.createNewCollectionInstance(getId(), length);
     }
 
     @Override
@@ -67,5 +68,10 @@ public class CollectionSerializer<C extends Collection> extends Serializer<C> im
     @Override
     public boolean isImmutable() {
         return false;
+    }
+
+    @Override
+    public void registerObjectCreator(ObjectCreator objectCreator) {
+        this.objectCreator = objectCreator;
     }
 }

@@ -27,10 +27,11 @@ package be.idevelop.fiber;
 import java.util.HashMap;
 import java.util.Map;
 
-import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
 public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> implements GenericObjectSerializer {
+
+    private ObjectCreator objectCreator;
 
     public MapSerializer(Class<M> mapClass) {
         super(mapClass);
@@ -40,7 +41,7 @@ public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> 
     @Override
     public M read(Input input) {
         int length = input.readShort();
-        M map = OBJECT_CREATOR.createNewInstance(getId());
+        M map = objectCreator.createNewInstance(getId());
         if (length > 0) {
             Map<Object, Object> tempMap = new HashMap<Object, Object>(length);
             for (int i = 0; i < length; i++) {
@@ -67,5 +68,10 @@ public class MapSerializer<M extends Map<Object, Object>> extends Serializer<M> 
     @Override
     public boolean isImmutable() {
         return false;
+    }
+
+    @Override
+    public void registerObjectCreator(ObjectCreator objectCreator) {
+        this.objectCreator = objectCreator;
     }
 }

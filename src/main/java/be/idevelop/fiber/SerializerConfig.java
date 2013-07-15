@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static be.idevelop.fiber.ObjectCreator.OBJECT_CREATOR;
-
 public final class SerializerConfig {
 
     private static final Map<Class, Class> PRIMITIVE_WRAPPER_MAP = new HashMap<Class, Class>(8);
@@ -65,6 +63,8 @@ public final class SerializerConfig {
     private Set<Class> registeredClasses;
 
     private ByteBufferPool byteBufferPool;
+
+    private ObjectCreator objectCreator = new ObjectCreator();
 
     SerializerConfig() {
         this.byteBufferPool = new ByteBufferPool();
@@ -159,7 +159,8 @@ public final class SerializerConfig {
             if (serializedClass != null) {
                 this.serializerClassMap.put(serializedClass, serializer);
                 if (serializer instanceof GenericObjectSerializer) {
-                    OBJECT_CREATOR.registerClass(serializer.getSerializedClass(), serializer.getId());
+                    ((GenericObjectSerializer) serializer).registerObjectCreator(objectCreator);
+                    this.objectCreator.registerClass(serializer.getSerializedClass(), serializer.getId());
                 }
             }
         }

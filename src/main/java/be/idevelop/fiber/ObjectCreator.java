@@ -31,35 +31,32 @@ import java.util.Collection;
 
 import static be.idevelop.fiber.ReferenceResolver.REFERENCE_RESOLVER;
 
-enum ObjectCreator {
+class ObjectCreator {
 
-    OBJECT_CREATOR;
+    private Constructor[] constructors;
 
-    private ThreadLocal<Constructor[]> constructors = new InheritableThreadLocal<Constructor[]>() {
-        @Override
-        protected Constructor[] initialValue() {
-            return new Constructor[Short.MAX_VALUE];
-        }
-    };
+    ObjectCreator() {
+        this.constructors = new Constructor[Short.MAX_VALUE];
+    }
 
     public void registerClass(Class clazz, short classId) {
         if (!Modifier.isAbstract(clazz.getModifiers())) {
             if (Collection.class.isAssignableFrom(clazz)) {
-                constructors.get()[classId] = getCollectionConstructor(clazz);
+                constructors[classId] = getCollectionConstructor(clazz);
             } else {
-                constructors.get()[classId] = getDefaultConstructor(clazz);
+                constructors[classId] = getDefaultConstructor(clazz);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
     public <T> T createNewInstance(short classId) {
-        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<T>) constructors.get()[classId]));
+        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<T>) constructors[classId]));
     }
 
     @SuppressWarnings("unchecked")
     public <C extends Collection> C createNewCollectionInstance(short classId, short length) {
-        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<C>) constructors.get()[classId], length));
+        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<C>) constructors[classId], length));
     }
 
     private <C extends Collection> Constructor<C> getCollectionConstructor(Class<C> clazz) {
