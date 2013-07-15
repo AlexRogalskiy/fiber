@@ -42,11 +42,6 @@ enum ReferenceResolver {
 
     private static final int MAX_OBJECT_INSTANCES = 8 * 1024;
 
-    static {
-        SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new SerializeReferenceContainer());
-        DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new DeserializeReferenceContainer());
-    }
-
     void addForSerialize(Object o, short classId, boolean immutable) {
         getSerializeReferenceContainer().add(o, classId, immutable);
     }
@@ -72,10 +67,16 @@ enum ReferenceResolver {
     }
 
     private SerializeReferenceContainer getSerializeReferenceContainer() {
+        if (SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.get() == null) {
+            SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new SerializeReferenceContainer());
+        }
         return SERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.get();
     }
 
     private DeserializeReferenceContainer getDeserializeReferenceContainer() {
+        if (DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.get() == null) {
+            DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.set(new DeserializeReferenceContainer());
+        }
         return DESERIALIZE_REFERENCE_CONTAINER_THREAD_LOCAL.get();
     }
 

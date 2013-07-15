@@ -66,7 +66,7 @@ public class PerformanceTest {
 
     @org.junit.Test
     public void testComplexObjectSerialize() {
-        new Test().execute(new ComplexObjectSerializeTest(), "complex S.", REPEAT);
+        new Test().execute(new ComplexObjectSerializeTest(), "complex S.", 10 * REPEAT);
     }
 
     @org.junit.Test
