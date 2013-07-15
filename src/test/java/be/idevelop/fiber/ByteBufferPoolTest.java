@@ -20,7 +20,7 @@ public class ByteBufferPoolTest {
 
             assertEquals(buffer.position(), start);
             assertEquals(buffer.limit(), end);
-            start = end % (1024 * 1024 * 64);
+            start = end % (1024 * 1024 * 32);
             end = start + 1024;
         }
     }

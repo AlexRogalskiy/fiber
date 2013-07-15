@@ -35,26 +35,31 @@ enum ObjectCreator {
 
     OBJECT_CREATOR;
 
-    private Constructor[] constructors = new Constructor[Short.MAX_VALUE];
+    private ThreadLocal<Constructor[]> constructors = new ThreadLocal<Constructor[]>() {
+        @Override
+        protected Constructor[] initialValue() {
+            return new Constructor[Short.MAX_VALUE];
+        }
+    };
 
     public void registerClass(Class clazz, short classId) {
         if (!Modifier.isAbstract(clazz.getModifiers())) {
             if (Collection.class.isAssignableFrom(clazz)) {
-                constructors[classId] = getCollectionConstructor(clazz);
+                constructors.get()[classId] = getCollectionConstructor(clazz);
             } else {
-                constructors[classId] = getDefaultConstructor(clazz);
+                constructors.get()[classId] = getDefaultConstructor(clazz);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
     public <T> T createNewInstance(short classId) {
-        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<T>) constructors[classId]));
+        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<T>) constructors.get()[classId]));
     }
 
     @SuppressWarnings("unchecked")
     public <C extends Collection> C createNewCollectionInstance(short classId, short length) {
-        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<C>) constructors[classId], length));
+        return REFERENCE_RESOLVER.addForDeserialize(createNewInstance((Constructor<C>) constructors.get()[classId], length));
     }
 
     private <C extends Collection> Constructor<C> getCollectionConstructor(Class<C> clazz) {
